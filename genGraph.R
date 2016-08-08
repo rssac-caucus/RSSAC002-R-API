@@ -17,6 +17,7 @@
 ##  Copyright (C) 2016, Andrew McConachie, <andrew@depht.com>
 
 ## Globals and includes
+options(warn=1)
 rootLetters <- c("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m")
 library(yaml, lib.loc=".") ## Tells R where to find the YAML lib
 `%.%` <- function(a, b) paste0(a, b) ## Infix concatenation operator
@@ -25,20 +26,20 @@ library(yaml, lib.loc=".") ## Tells R where to find the YAML lib
 ## letters MUST be given in order(e.g. a-d,f,l-m), white space is not allowed
 ## If letters is not a single letter, an aggregate will be returned
 ## startDate and endDate are inclusive and take the form YYYY/MM/DD
-## metric matches the YAML filename and metric: attribute, it MUST be present, e.g. traffic-sizes
-## submetrics matches 1 or more of the YAML subsubmetrics, it is optional and can be a string or vector, e.g. udp-request-sizes
-## subsubbmetrics matches 1 or more of the YAML subsubmetrics, it is optional and can be a string or vector, e.g. 16-31
-## All arguments are strings
-rootData <- function(letters, startDate, endDate, metric, submetrics, subsubmetrics){
-    if(missing(submetrics)){
-        ## TODO:Do something
-    }
+## metrics is a vector of requested metrics arranged in a hierarchy
+## The first entry of metrics is required, and can only be a string of the top-level metric/directory name
+## The following entries of metrics are optional, and can be either a string metric name or vector of string metric names
+## Examples: c("traffic-sizes", "udp-request-sizes", "16-31")
+## Other entries in metrics can be vectors containing metrics, c("traffic-sizes", "udp-request-sizes", c("16-31", "32-47"))
+## Or left empty to return all entries at that level, c("traffic-sizes", "udp-request-sizes"), c("rcode-volume") 
+metricsByDate <- function(letters, startDate, endDate, metrics){
+    excludeYamlKeys <- c("service", "start-period", "end-period", "metric") ## Top-level YAML keys to never return
+    rv <- list()
+    fileLetters <- c() ## Our list of letters to work on
 
     ## Generate our list of letters
     letters <- tolower(letters)
-    fileLetters <- c();
     toks <- unlist(strsplit(letters, ""))
-
     ii <- 0
     while(ii < length(toks)){
         ii <- ii + 1
@@ -54,31 +55,41 @@ rootData <- function(letters, startDate, endDate, metric, submetrics, subsubmetr
                 ii <- ii + 1
             }
     }
-    
-    ##    cat(length(fileLetters), "\n")
-    ##    cat(unlist(fileLetters), "\n")
 
-    for(let in fileLetters){
-        cat(let %.% "-root", "\n")
-        activeDate <- unlist(strsplit(startDate, "/"))
-        endDate <- unlist(strsplit(endDate, "/"))
-        while(! all(activeDate == endDate)){
-            ##cat(endDate, "\n")
-            ##cat(activeDate, "\n")
-            fn <- paste(let, "root", activeDate[1] %.% activeDate[2] %.% activeDate[3], metric, sep="-") %.% ".yaml"
-            fp <- file.path(let %.% "-root", activeDate[1], activeDate[2], metric) %.% "/"
+    ## Read files from disk and fill rv
+    activeDate <- unlist(strsplit(startDate, "/"))
+    endDate <- unlist(strsplit(endDate, "/"))
+    while(! all(activeDate == endDate)){
+        rv[[length(rv)+1]] <- list(date=activeDate, letters=list())
+        str(rv)
+        for(let in fileLetters){
+            cat("Parsing " %.% let %.% "-root", "\n")
+            fn <- paste(let, "root", activeDate[1] %.% activeDate[2] %.% activeDate[3], metrics[1], sep="-") %.% ".yaml"
+            fp <- file.path(let %.% "-root", activeDate[1], activeDate[2], metrics[1]) %.% "/"
             f <- fp %.% fn
-            cat(f,"\n")
+            ##cat(f, "\n")
             if(file.exists(f)){
-                cat("exists:", "\n")
-                cat(f,"\n")
+                cat(f %.% " exists:", "\n")
                 yam <- yaml.load_file(f)
-                unlink(f)
-                ## TODO:Do something with the yaml
+                rv[[length(rv)]][['letters']][[let]] <- append(rv[[length(rv)]][[letters]], let=list()
+                if(length(metrics) == 1){
+                    for(ii in 1:length(yam)){
+                        if(! names(yam[ii]) %in% excludeYamlKeys){
+                            str(rv)
+                            rv[[length(rv)+1]][[date]][[let]] <- list(service=let)  ##names(yam[ii])=yam[ii])
+                            str(rv)
+                            ##cat(names(yam[ii]) %.% ":" %.% yam[ii], "\n")
+                        }
+                    }
+                }
             }
             activeDate <- incDate(activeDate)
         }
     }
+    return(rv)
+
+    ## We want to convert all dates to R dates before returning
+    ##as.Date(paste(activeDate, collapse="/"), "%Y/%m/%d"), list())
 }
 
 ## Increments a date vector
@@ -96,15 +107,21 @@ incDate <- function(dat){
         return(c(dat[1], dat[2], pad(as.integer(dat[3]) + 1)))
     }
     if(as.integer(dat[2]) < 12){
-        quit()
         return(c(dat[1], pad(as.integer(dat[2]) + 1, "1")))
     }
-    quit()
     return(c(as.integer(dat[1]) + 1, "1", "1"))
 }
 
-    
-rootData('a',"2016/01/01","2016/02/01", "load-time")
+## Push a value on to the end of a vector, why is this not built in?
+##push <- function(vec, val){ return(c(vec, value)) }
+        
+met <- metricsByDate('a',"2016/01/01","2016/01/02", c("rcode-volume"))
+
+##cat(str(met))
+
+##png(filename="figure.png", height=295, width=300, bg="white")
+
+##plot(met)
 
 ##cat("Begin execution\n")
 ##test <- yaml.load_file("test.yaml")
@@ -126,9 +143,9 @@ rootData('a',"2016/01/01","2016/02/01", "load-time")
 ##x <- c(10.4, 5.6, 3.1, 6.4, 21.7)
 ##y <- c(10.4, 5.5, 3.1, 6.4, 21.7)
 
-##png(filename="figure.png", height=295, width=300, bg="white")
 
-##plot(test)
+
+
 
 ## Create box around plot
 ##box()

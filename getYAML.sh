@@ -42,6 +42,7 @@ dload http://a.root-servers.org/rssac-metrics/raw/ a-root
 dload https://b.root-servers.org/rssac/ b-root --no-check-certificate
 dload http://c.root-servers.org/rssac002-metrics/ c-root
 dload http://droot-web.maxgigapop.net/rssac002/ d-root
+dload https://e.root-servers.org/rssac/ e-root --inet4-only
 dload http://h.root-servers.org/rssac002-metrics/ h-root
 dload http://j.root-servers.org/rssac-metrics/raw/ j-root
 dload https://www-static.ripe.net/dynamic/rssac002-metrics/ k-root
