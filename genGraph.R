@@ -60,8 +60,7 @@ metricsByDate <- function(letters, startDate, endDate, metrics){
     activeDate <- unlist(strsplit(startDate, "/"))
     endDate <- unlist(strsplit(endDate, "/"))
     while(! all(activeDate == endDate)){
-        rv[[length(rv)+1]] <- list(date=activeDate, letters=list())
-        str(rv)
+        rv[[length(rv)+1]] <- list(date=as.Date(paste(activeDate, collapse="/")), letters=list())
         for(let in fileLetters){
             cat("Parsing " %.% let %.% "-root", "\n")
             fn <- paste(let, "root", activeDate[1] %.% activeDate[2] %.% activeDate[3], metrics[1], sep="-") %.% ".yaml"
@@ -71,14 +70,20 @@ metricsByDate <- function(letters, startDate, endDate, metrics){
             if(file.exists(f)){
                 cat(f %.% " exists:", "\n")
                 yam <- yaml.load_file(f)
-                rv[[length(rv)]][['letters']][[let]] <- append(rv[[length(rv)]][[letters]], let=list()
+                rv[[length(rv)]][['letters']][[let]] <- list(metric=metrics[1], keys=c(), values=c())
+                ##str(rv)
                 if(length(metrics) == 1){
                     for(ii in 1:length(yam)){
                         if(! names(yam[ii]) %in% excludeYamlKeys){
-                            str(rv)
-                            rv[[length(rv)+1]][[date]][[let]] <- list(service=let)  ##names(yam[ii])=yam[ii])
-                            str(rv)
-                            ##cat(names(yam[ii]) %.% ":" %.% yam[ii], "\n")
+                            ##str(rv)
+                            ##rv[[length(rv)]][['letters']][[let]][['values']] <- append(rv[[length(rv)]][['letters']][[let]][['values']], as.double(yam[ii]))
+                            rv[[length(rv)]][['letters']][[let]][['keys']] <- append(rv[[length(rv)]][['letters']][[let]][['keys']], as.character(names(yam[ii])))
+
+                            if(as.integer(yam[ii]) < 0){ ## http://r.789695.n4.nabble.com/large-integers-in-R-td1310933.html
+                                rv[[length(rv)]][['letters']][[let]][['values']] <- append(rv[[length(rv)]][['letters']][[let]][['values']], as.double(yam[ii]))
+                            }else{
+                                rv[[length(rv)]][['letters']][[let]][['values']] <- append(rv[[length(rv)]][['letters']][[let]][['values']], as.integer(yam[ii]))
+                            }
                         }
                     }
                 }
@@ -86,10 +91,8 @@ metricsByDate <- function(letters, startDate, endDate, metrics){
             activeDate <- incDate(activeDate)
         }
     }
+    str(rv)
     return(rv)
-
-    ## We want to convert all dates to R dates before returning
-    ##as.Date(paste(activeDate, collapse="/"), "%Y/%m/%d"), list())
 }
 
 ## Increments a date vector
