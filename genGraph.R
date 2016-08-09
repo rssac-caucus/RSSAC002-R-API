@@ -25,18 +25,60 @@ library(yaml, lib.loc=".") ## Tells R where to find the YAML lib
 ## letters can be a single letter(a), a range(a-c), a list(a,b,g), or a combination of all 3
 ## letters MUST be given in order(e.g. a-d,f,l-m), white space is not allowed
 ## If letters is not a single letter, an aggregate will be returned
-## startDate and endDate are inclusive and take the form YYYY/MM/DD
-## metrics is a vector of requested metrics arranged in a hierarchy
-## The first entry of metrics is required, and can only be a string of the top-level metric/directory name
-## The following entries of metrics are optional, and can be either a string metric name or vector of string metric names
-## Examples: c("traffic-sizes", "udp-request-sizes", "16-31")
-## Other entries in metrics can be vectors containing metrics, c("traffic-sizes", "udp-request-sizes", c("16-31", "32-47"))
-## Or left empty to return all entries at that level, c("traffic-sizes", "udp-request-sizes"), c("rcode-volume") 
+##
+## startDate and endDate take the form YYYY/MM/DD, endDate will not be included
+## Invalid DD values can be used for endDate if(DD < 32) Example: 2016/02/30
+##
+## metrics is a vector of requested metrics as strings arranged in a hierarchy to identify a single vector of values
+## The first and second entry of metrics are required
+## The following entries of metrics are optional dependent on the metric being queried
+## Examples: c("traffic-sizes", "udp-request-sizes", "16-31"), c("unique-sources", "num-sources-ipv6"), 
+## c("rcode-volume", "10"), 
+##
+## Returns a vector of values ordered by date
 metricsByDate <- function(letters, startDate, endDate, metrics){
+    ## Increments a date vector
+    ## Dirty, don't try this at home kids
+    incDate <- function(dat){
+        pad <- function(s){
+            if(nchar(s) < 2){
+                return("0" %.% s)
+            }else{
+                return(s)
+            }
+        }
+        
+        if(as.integer(dat[3]) < 31){
+            return(c(dat[1], dat[2], pad(as.integer(dat[3]) + 1)))
+        }
+        if(as.integer(dat[2]) < 12){
+            return(c(dat[1], pad(as.integer(dat[2]) + 1, "1")))
+        }
+        return(c(as.integer(dat[1]) + 1, "1", "1"))
+    }
+    
+    ## Encapsulates mess of integer vs double(float)
+    ## http://r.789695.n4.nabble.com/large-integers-in-R-td1310933.html
+    setVal <- function(val){
+        if(length(val) == 0){
+            cat("setVal passed zero length value", "\n")
+            return(as.integer(0))
+        }
+
+        if(as.integer(val) < 0){
+            return(as.double(val))
+        }else{
+            return(as.integer(val))
+        }
+    }
+
+
     excludeYamlKeys <- c("service", "start-period", "end-period", "metric") ## Top-level YAML keys to never return
     rv <- list()
     fileLetters <- c() ## Our list of letters to work on
 
+    ## TODO: Do some bad input checking and print errors and exit
+    
     ## Generate our list of letters
     letters <- tolower(letters)
     toks <- unlist(strsplit(letters, ""))
@@ -57,74 +99,58 @@ metricsByDate <- function(letters, startDate, endDate, metrics){
     }
 
     ## Read files from disk and fill rv
-    activeDate <- unlist(strsplit(startDate, "/"))
-    endDate <- unlist(strsplit(endDate, "/"))
-    while(! all(activeDate == endDate)){
-        rv[[length(rv)+1]] <- list(date=as.Date(paste(activeDate, collapse="/")), letters=list())
-        for(let in fileLetters){
-            cat("Parsing " %.% let %.% "-root", "\n")
+    for(let in fileLetters){
+        rv[let] <- c()
+        activeDate <- unlist(strsplit(startDate, "/"))
+        endDate <- unlist(strsplit(endDate, "/"))
+        while(! all(activeDate == endDate)){
+            ##cat("Parsing " %.% let %.% "-root", "\n")
             fn <- paste(let, "root", activeDate[1] %.% activeDate[2] %.% activeDate[3], metrics[1], sep="-") %.% ".yaml"
             fp <- file.path(let %.% "-root", activeDate[1], activeDate[2], metrics[1]) %.% "/"
             f <- fp %.% fn
             ##cat(f, "\n")
             if(file.exists(f)){
-                cat(f %.% " exists:", "\n")
-                yam <- yaml.load_file(f)
-                rv[[length(rv)]][['letters']][[let]] <- list(metric=metrics[1], keys=c(), values=c())
-                ##str(rv)
-                if(length(metrics) == 1){
-                    for(ii in 1:length(yam)){
-                        if(! names(yam[ii]) %in% excludeYamlKeys){
-                            ##str(rv)
-                            ##rv[[length(rv)]][['letters']][[let]][['values']] <- append(rv[[length(rv)]][['letters']][[let]][['values']], as.double(yam[ii]))
-                            rv[[length(rv)]][['letters']][[let]][['keys']] <- append(rv[[length(rv)]][['letters']][[let]][['keys']], as.character(names(yam[ii])))
-
-                            if(as.integer(yam[ii]) < 0){ ## http://r.789695.n4.nabble.com/large-integers-in-R-td1310933.html
-                                rv[[length(rv)]][['letters']][[let]][['values']] <- append(rv[[length(rv)]][['letters']][[let]][['values']], as.double(yam[ii]))
-                            }else{
-                                rv[[length(rv)]][['letters']][[let]][['values']] <- append(rv[[length(rv)]][['letters']][[let]][['values']], as.integer(yam[ii]))
-                            }
-                        }
+                ##cat(f %.% " exists:", "\n")
+                yamtmp <- yaml.load_file(f)
+                yam <- list()
+                for(ii in 1:length(yamtmp)){ ## Remove excluded keys from yaml
+                    if(! names(yamtmp[ii]) %in% excludeYamlKeys){
+                        yam[[names(yamtmp[ii])]] <- yamtmp[ii]
                     }
+                }
+
+                if(length(metrics) == 2){
+                    rv[[let]] <- append(rv[[let]], setVal(yam[[metrics[2]]]))
+                }else{
+                    rv[[let]] <- append(rv[[let]], setVal(yam[metrics[2]][[1]][[1]][[metrics[3]]]))
                 }
             }
             activeDate <- incDate(activeDate)
         }
     }
+    cat("Done gathering", "\n")
     str(rv)
-    return(rv)
+
+    ## Compute aggregate
+    agg = c(0)
+    for(let in fileLetters){
+        agg <- agg + rv[[let]]
+    }
+    str(agg)
+    return(agg)
 }
 
-## Increments a date vector
-## Dirty, don't try this at home kids
-incDate <- function(dat){
-    pad <- function(s){
-        if(nchar(s) < 2){
-            return("0" %.% s)
-        }else{
-            return(s)
-        }
-    }
+##met <- metricsByDate('a',"2016/01/01","2016/01/20", c("unique-sources", "num-sources-ipv6"))
+##met <- metricsByDate('a',"2016/01/01","2016/01/26", c("traffic-sizes", "udp-response-sizes", "192-207"))
+met <- metricsByDate('a-b',"2016/01/01","2016/01/20", c("traffic-volume", "dns-tcp-queries-received-ipv4"))
+##met <- metricsByDate('a,j',"2016/01/01","2016/01/20", c("rcode-volume", "0"))
+##met <- metricsByDate('a',"2016/01/01","2016/01/20", c("load-time", "2016011000"))
 
-    if(as.integer(dat[3]) < 31){
-        return(c(dat[1], dat[2], pad(as.integer(dat[3]) + 1)))
-    }
-    if(as.integer(dat[2]) < 12){
-        return(c(dat[1], pad(as.integer(dat[2]) + 1, "1")))
-    }
-    return(c(as.integer(dat[1]) + 1, "1", "1"))
-}
+png(filename="figure.png", height=295, width=300, bg="white")
+plot(met)
 
-## Push a value on to the end of a vector, why is this not built in?
-##push <- function(vec, val){ return(c(vec, value)) }
-        
-met <- metricsByDate('a',"2016/01/01","2016/01/02", c("rcode-volume"))
-
-##cat(str(met))
-
-##png(filename="figure.png", height=295, width=300, bg="white")
-
-##plot(met)
+## Turn off device driver (to flush output to png)
+dev.off()
 
 ##cat("Begin execution\n")
 ##test <- yaml.load_file("test.yaml")
@@ -146,15 +172,9 @@ met <- metricsByDate('a',"2016/01/01","2016/01/02", c("rcode-volume"))
 ##x <- c(10.4, 5.6, 3.1, 6.4, 21.7)
 ##y <- c(10.4, 5.5, 3.1, 6.4, 21.7)
 
-
-
-
-
 ## Create box around plot
 ##box()
 
-## Turn off device driver (to flush output to png)
-##dev.off()
 
 
 

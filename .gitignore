@@ -2,3 +2,5 @@
 *.log
 *-root/*
 *.yaml
+*.png
+*.pdf
