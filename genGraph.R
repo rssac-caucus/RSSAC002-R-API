@@ -52,9 +52,9 @@ metricsByDate <- function(letters, startDate, endDate, metrics){
             return(c(dat[1], dat[2], pad(as.integer(dat[3]) + 1)))
         }
         if(as.integer(dat[2]) < 12){
-            return(c(dat[1], pad(as.integer(dat[2]) + 1, "1")))
+            return(c(dat[1], pad(as.integer(dat[2]) + 1), "01"))
         }
-        return(c(as.integer(dat[1]) + 1, "1", "1"))
+        return(c(as.integer(dat[1]) + 1, "01", "01"))
     }
     
     ## Encapsulates mess of integer vs double(float)
@@ -108,7 +108,6 @@ metricsByDate <- function(letters, startDate, endDate, metrics){
             fn <- paste(let, "root", activeDate[1] %.% activeDate[2] %.% activeDate[3], metrics[1], sep="-") %.% ".yaml"
             fp <- file.path(let %.% "-root", activeDate[1], activeDate[2], metrics[1]) %.% "/"
             f <- fp %.% fn
-            ##cat(f, "\n")
             if(file.exists(f)){
                 ##cat(f %.% " exists:", "\n")
                 yamtmp <- yaml.load_file(f)
@@ -128,25 +127,25 @@ metricsByDate <- function(letters, startDate, endDate, metrics){
             activeDate <- incDate(activeDate)
         }
     }
-    cat("Done gathering", "\n")
-    str(rv)
 
     ## Compute aggregate
     agg = c(0)
     for(let in fileLetters){
         agg <- agg + rv[[let]]
     }
-    str(agg)
     return(agg)
 }
 
 ##met <- metricsByDate('a',"2016/01/01","2016/01/20", c("unique-sources", "num-sources-ipv6"))
 ##met <- metricsByDate('a',"2016/01/01","2016/01/26", c("traffic-sizes", "udp-response-sizes", "192-207"))
-met <- metricsByDate('a-b',"2016/01/01","2016/01/20", c("traffic-volume", "dns-tcp-queries-received-ipv4"))
+##met <- metricsByDate('a-b',"2016/01/01","2016/01/20", c("traffic-volume", "dns-tcp-queries-received-ipv4"))
 ##met <- metricsByDate('a,j',"2016/01/01","2016/01/20", c("rcode-volume", "0"))
 ##met <- metricsByDate('a',"2016/01/01","2016/01/20", c("load-time", "2016011000"))
 
-png(filename="figure.png", height=295, width=300, bg="white")
+
+met <- metricsByDate('a',"2016/01/01","2016/07/01", c("unique-sources", "num-sources-ipv6-aggregate"))
+
+png(filename="figure.png", bg="white")
 plot(met)
 
 ## Turn off device driver (to flush output to png)
