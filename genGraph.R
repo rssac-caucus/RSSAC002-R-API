@@ -19,7 +19,8 @@
 ## Globals and includes
 options(warn=1)
 rootLetters <- c("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m")
-library(yaml, lib.loc=".") ## Tells R where to find the YAML lib
+library(yaml, lib.loc=".") ##  Read/write YAML files
+library(ggplot2, lib.loc=".") ## Extended graphing options
 `%.%` <- function(a, b) paste0(a, b) ## Infix concatenation operator
 
 ## letters can be a single letter(a), a range(a-c), a list(a,b,g), or a combination of all 3
@@ -143,10 +144,12 @@ metricsByDate <- function(letters, startDate, endDate, metrics){
 ##met <- metricsByDate('a',"2016/01/01","2016/01/20", c("load-time", "2016011000"))
 
 
-met <- metricsByDate('a',"2016/01/01","2016/07/01", c("unique-sources", "num-sources-ipv6-aggregate"))
+ip6_sources <- metricsByDate('a',"2016/01/01","2016/07/01", c("unique-sources", "num-sources-ipv6-aggregate"))
+
+
 
 png(filename="figure.png", bg="white")
-plot(met)
+plot(ip6_sources)
 
 ## Turn off device driver (to flush output to png)
 dev.off()
