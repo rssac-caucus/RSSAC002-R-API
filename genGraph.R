@@ -18,10 +18,12 @@
 
 ## Globals and includes
 options(warn=1)
-rootLetters <- c("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m")
+.libPaths(".")
 library(yaml, lib.loc=".") ##  Read/write YAML files
 library(ggplot2, lib.loc=".") ## Extended graphing options
+
 `%.%` <- function(a, b) paste0(a, b) ## Infix concatenation operator
+rootLetters <- c("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m")
 
 ## letters can be a single letter(a), a range(a-c), a list(a,b,g), or a combination of all 3
 ## letters MUST be given in order(e.g. a-d,f,l-m), white space is not allowed
@@ -146,10 +148,12 @@ metricsByDate <- function(letters, startDate, endDate, metrics){
 
 ip6_sources <- metricsByDate('a',"2016/01/01","2016/07/01", c("unique-sources", "num-sources-ipv6-aggregate"))
 
+dates <- seq(as.Date("2016/01/01", "%Y/%m/%d"), len=182, by="1 day")
 
+str(dates)
 
 png(filename="figure.png", bg="white")
-plot(ip6_sources)
+qplot(x=dates, y=ip6_sources)
 
 ## Turn off device driver (to flush output to png)
 dev.off()
