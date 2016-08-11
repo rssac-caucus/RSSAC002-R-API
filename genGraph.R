@@ -40,26 +40,6 @@ rootLetters <- c("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m"
 ##
 ## Returns a vector of values ordered by date
 metricsByDate <- function(letters, startDate, endDate, metrics){
-    ## Increments a date vector
-    ## Dirty, don't try this at home kids
-    incDate <- function(dat){
-        pad <- function(s){
-            if(nchar(s) < 2){
-                return("0" %.% s)
-            }else{
-                return(s)
-            }
-        }
-        
-        if(as.integer(dat[3]) < 31){
-            return(c(dat[1], dat[2], pad(as.integer(dat[3]) + 1)))
-        }
-        if(as.integer(dat[2]) < 12){
-            return(c(dat[1], pad(as.integer(dat[2]) + 1), "01"))
-        }
-        return(c(as.integer(dat[1]) + 1, "01", "01"))
-    }
-    
     ## Encapsulates mess of integer vs double(float)
     ## http://r.789695.n4.nabble.com/large-integers-in-R-td1310933.html
     setVal <- function(val){
@@ -75,7 +55,7 @@ metricsByDate <- function(letters, startDate, endDate, metrics){
         }
     }
 
-
+    fmt <- "%Y/%m/%d" ## Our date format
     excludeYamlKeys <- c("service", "start-period", "end-period", "metric") ## Top-level YAML keys to never return
     rv <- list()
     fileLetters <- c() ## Our list of letters to work on
@@ -112,7 +92,7 @@ metricsByDate <- function(letters, startDate, endDate, metrics){
             fp <- file.path(let %.% "-root", activeDate[1], activeDate[2], metrics[1]) %.% "/"
             f <- fp %.% fn
             if(file.exists(f)){
-                ##cat(f %.% " exists:", "\n")
+                cat("exists  " %.% f, "\n")
                 yamtmp <- yaml.load_file(f)
                 yam <- list()
                 for(ii in 1:length(yamtmp)){ ## Remove excluded keys from yaml
@@ -126,8 +106,12 @@ metricsByDate <- function(letters, startDate, endDate, metrics){
                 }else{
                     rv[[let]] <- append(rv[[let]], setVal(yam[metrics[2]][[1]][[1]][[metrics[3]]]))
                 }
+            }else{ ## No file for this date, fill with zero
+                cat("Missing " %.% f, "\n")
+                rv[[let]] <- append(rv[[let]], 0)
             }
-            activeDate <- incDate(activeDate)
+            ## Increment activeDate
+            activeDate <- unlist(strsplit(format(as.Date(paste(activeDate, collapse="/"), fmt) + 1, fmt), "/"))
         }
     }
 
@@ -145,42 +129,8 @@ metricsByDate <- function(letters, startDate, endDate, metrics){
 ##met <- metricsByDate('a,j',"2016/01/01","2016/01/20", c("rcode-volume", "0"))
 ##met <- metricsByDate('a',"2016/01/01","2016/01/20", c("load-time", "2016011000"))
 
-
-ip6_sources <- metricsByDate('a',"2016/01/01","2016/07/01", c("unique-sources", "num-sources-ipv6-aggregate"))
-
+ip6_sources <- metricsByDate('a-c',"2016/01/01","2016/07/01", c("unique-sources", "num-sources-ipv6-aggregate"))
 dates <- seq(as.Date("2016/01/01", "%Y/%m/%d"), len=182, by="1 day")
-
-str(dates)
-
-png(filename="figure.png", bg="white")
+png(filename="ip6_sources_aggregate_A.png", bg="white")
 qplot(x=dates, y=ip6_sources)
-
-## Turn off device driver (to flush output to png)
-dev.off()
-
-##cat("Begin execution\n")
-##test <- yaml.load_file("test.yaml")
-##cat names(test)
-##cat(length(test))
-##cat("\n")
-##cat(test[[1]])
-##cat("\n")
-##cat(test[["metric"]])
-##cat("\n")
-##cat(test[["end-period"]])
-##cat("\n")
-##cat(test[["size"]][[2]])
-##cat("\n")
-##cat(names(test[["size"]]))
-##cat("\n")
-##cat(size[["2"]]
-
-##x <- c(10.4, 5.6, 3.1, 6.4, 21.7)
-##y <- c(10.4, 5.5, 3.1, 6.4, 21.7)
-
-## Create box around plot
-##box()
-
-
-
 
