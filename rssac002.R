@@ -19,9 +19,8 @@
 ## Globals and includes
 options(warn=1)
 .libPaths(".")
-suppressPackageStartupMessages(library("methods"))
-library(yaml) ##  Read/write YAML files
-library(ggplot2) ## Extended graphing options
+library(yaml, lib.loc=".") ##  Read/write YAML files
+library(ggplot2, lib.loc=".") ## Extended graphing options
 
 `%.%` <- function(a, b) paste0(a, b) ## Infix concatenation operator
 rootLetters <- c("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m")
