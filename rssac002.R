@@ -24,7 +24,7 @@ library(yaml) ##  Read/write YAML files
 library(ggplot2) ## Extended graphing options
 
 `%.%` <- function(a, b) paste0(a, b) ## Infix concatenation operator
-rootLetters <- c("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m")
+rootLetters <- c("a", "b", "c", "d", "e", "h", "j", "k", "l", "m")
 
 ## letters can be a single letter(a), a range(a-c), a list(a,b,g), or a combination of all 3
 ## letters MUST be given in order(e.g. a-d,f,l-m), white space is not allowed
@@ -67,6 +67,13 @@ metricsByDate <- function(letters, startDate, endDate, metrics){
     letters <- tolower(letters)
     toks <- unlist(strsplit(letters, ""))
     ii <- 0
+    for(t in toks){
+        if(! (t %in% rootLetters || t == ',' || t == '-')){
+            cat("Bad character in letters argument: " %.% t, "\n")
+            quit()
+        }
+    }
+
     while(ii < length(toks)){
         ii <- ii + 1
         if(charmatch(toks[ii], rootLetters, nomatch=-1) != -1){
@@ -107,9 +114,9 @@ metricsByDate <- function(letters, startDate, endDate, metrics){
                 }else{
                     rv[[let]] <- append(rv[[let]], setVal(yam[metrics[2]][[1]][[1]][[metrics[3]]]))
                 }
-            }else{ ## No file for this date, fill with zero
+            }else{ ## No file for this date, fill with Not-a-Number(NaN)
                 cat("Missing " %.% f, "\n")
-                rv[[let]] <- append(rv[[let]], 0)
+                rv[[let]] <- append(rv[[let]], NaN)
             }
             ## Increment activeDate
             activeDate <- unlist(strsplit(format(as.Date(paste(activeDate, collapse="/"), fmt) + 1, fmt), "/"))
