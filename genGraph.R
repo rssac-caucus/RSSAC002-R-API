@@ -16,18 +16,65 @@
 ##
 ##  Copyright (C) 2016, Andrew McConachie, <andrew@depht.com>
 
-source("rssac002.R") ## Include our RSSAC002 API
+source('rssac002.R') ## Include our RSSAC002 API
 
-##met <- metricsByDate('a',"2016/01/01","2016/01/20", c("unique-sources", "num-sources-ipv6"))
-##met <- metricsByDate('a',"2016/01/01","2016/01/26", c("traffic-sizes", "udp-response-sizes", "192-207"))
-##met <- metricsByDate('a-b',"2016/01/01","2016/01/20", c("traffic-volume", "dns-tcp-queries-received-ipv4"))
-##met <- metricsByDate('a,j',"2016/01/01","2016/01/20", c("rcode-volume", "0"))
-##met <- metricsByDate('a',"2016/01/01","2016/01/20", c("load-time", "2016011000"))
+##met <- metricsByDate('a','2016/01/01','2016/01/20', c('unique-sources', 'num-sources-ipv6'))
+##met <- metricsByDate('a','2016/01/01','2016/01/26', c('traffic-sizes', 'udp-response-sizes', '192-207'))
+##met <- metricsByDate('a-b','2016/01/01','2016/01/20', c('traffic-volume', 'dns-tcp-queries-received-ipv4'))
+##met <- metricsByDate('a,j','2016/01/01','2016/01/20', c('rcode-volume', '0'))
+##met <- metricsByDate('a','2016/01/01','2016/01/20', c('load-time', '2016011000'))
 
-ip6_sources_j<- metricsByDate('j',"2016/01/01","2016/07/01", c("unique-sources", "num-sources-ipv6-aggregate"))
-ip6_sources_l<- metricsByDate('l',"2016/01/01","2016/07/01", c("unique-sources", "num-sources-ipv6-aggregate"))
+days <- seq(as.Date('2016/01/01', '%Y/%m/%d'), len=182, by='1 day')
 
-dates <- seq(as.Date("2016/01/01", "%Y/%m/%d"), len=182, by="1 day")
-png(filename="ip6_sources_aggregate_A.png", bg="white")
-qplot(x=dates, y=ip6_sources_j, geom = "path")
+a <- "
+ip6_sources_j <- metricsByDate('j','2016/01/01','2016/07/01', c('unique-sources', 'num-sources-ipv6-aggregate'))
+ip6_sources_l <- metricsByDate('l','2016/01/01','2016/07/01', c('unique-sources', 'num-sources-ipv6-aggregate'))
+
+dj <- data.frame(let=ip6_sources_j, dates=days)
+dl <- data.frame(let=ip6_sources_l, dates=days)
+
+png(filename='test.png', bg='white')
+ggplot() + geom_point(data = dj, aes(x = days, y=let)) + geom_point(data = dl, aes(x = days, y = let), colour = 'red')
+"
+
+a <- "
+ip4 <- metricsByDate('a,c,d,h-m', '2016/01/01','2016/07/01', c('unique-sources', 'num-sources-ipv4'))
+ip6 <- metricsByDate('a,c,d,h-m', '2016/01/01','2016/07/01', c('unique-sources', 'num-sources-ipv6'))
+d <-  data.frame(p=ip6 / (ip4+ip6) * 100, dates=days)
+
+png(filename='test.png', bg='white')
+ggplot() + geom_ribbon(data = d, aes(x = days, y=p, ymax=p+1, ymin=p-1)) 
+"
+
+A4 <- metricsByDate('a', '2016/01/01','2016/07/01', c('unique-sources', 'num-sources-ipv4'))
+A6 <- metricsByDate('a', '2016/01/01','2016/07/01', c('unique-sources', 'num-sources-ipv6'))
+
+C4 <- metricsByDate('c', '2016/01/01','2016/07/01', c('unique-sources', 'num-sources-ipv4'))
+C6 <- metricsByDate('c', '2016/01/01','2016/07/01', c('unique-sources', 'num-sources-ipv6'))
+
+D4 <- metricsByDate('d', '2016/01/01','2016/07/01', c('unique-sources', 'num-sources-ipv4'))
+D6 <- metricsByDate('d', '2016/01/01','2016/07/01', c('unique-sources', 'num-sources-ipv6'))
+
+A <- A6 / (A4+A6) * 100
+C <- C6 / (C4+C6) * 100
+D <- D6 / (D4+D6) * 100
+
+lets <- data.frame(dates=days, A=A, C=C, D=D)
+
+png(filename='test.png', width=1000, height=800)
+
+pv <- 0.25 ## Width of ribbon
+ggplot() + labs(title='% IPv6 Sources', y='%', x='2016', colour = 'Root') +
+    geom_ribbon(data = lets, aes(x = dates, y=A, ymax=A+pv, ymin=A-pv, colour='A')) +
+        geom_ribbon(data = lets, aes(x = dates, y=C, ymax=C+pv, ymin=C-pv, colour='C')) +
+            geom_ribbon(data = lets, aes(x = dates, y=D, ymax=D+pv, ymin=D-pv, colour='D'))
+
+
+
+
+
+
+
+
+
 
