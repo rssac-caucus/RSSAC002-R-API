@@ -26,7 +26,7 @@ source('rssac002.R') ## Include our RSSAC002 API
 
 days <- seq(as.Date('2016/01/01', '%Y/%m/%d'), len=182, by='1 day')
 
-a <- "
+example <- "
 ip6_sources_j <- metricsByDate('j','2016/01/01','2016/07/01', c('unique-sources', 'num-sources-ipv6-aggregate'))
 ip6_sources_l <- metricsByDate('l','2016/01/01','2016/07/01', c('unique-sources', 'num-sources-ipv6-aggregate'))
 
@@ -37,7 +37,7 @@ png(filename='test.png', bg='white')
 ggplot() + geom_point(data = dj, aes(x = days, y=let)) + geom_point(data = dl, aes(x = days, y = let), colour = 'red')
 "
 
-a <- "
+example <- "
 ip4 <- metricsByDate('a,c,d,h-m', '2016/01/01','2016/07/01', c('unique-sources', 'num-sources-ipv4'))
 ip6 <- metricsByDate('a,c,d,h-m', '2016/01/01','2016/07/01', c('unique-sources', 'num-sources-ipv6'))
 d <-  data.frame(p=ip6 / (ip4+ip6) * 100, dates=days)
@@ -63,12 +63,29 @@ lets <- data.frame(dates=days, A=A, C=C, D=D)
 
 png(filename='test.png', width=1000, height=800)
 
+
+example <- "
+ggplot(lets, aes(A)) + labs(title='Density IPv6 Sources A Root', y='Density', x='%') +
+    geom_density()
+"
+
+
+example <- "
 pv <- 0.25 ## Width of ribbon
 ggplot() + labs(title='% IPv6 Sources', y='%', x='2016', colour = 'Root') +
     geom_ribbon(data = lets, aes(x = dates, y=A, ymax=A+pv, ymin=A-pv, colour='A')) +
         geom_ribbon(data = lets, aes(x = dates, y=C, ymax=C+pv, ymin=C-pv, colour='C')) +
             geom_ribbon(data = lets, aes(x = dates, y=D, ymax=D+pv, ymin=D-pv, colour='D'))
+"
 
+## TODO: Investigate quantile library 
+##ggplot(lets, aes(dates, A)) + geom_point() + geom_quantile()
+
+
+ggplot() + labs(title='% IPv6 Sources', y='%', x='2016', colour = 'Root') +
+    geom_point(data=lets, aes(x=dates, y=A, colour='A')) +   geom_smooth(data=lets, aes(x=dates, y=A), method = 'lm', se = FALSE) +
+        geom_point(data=lets, aes(x=dates, y=C, colour='C')) +   geom_smooth(data=lets, aes(x=dates, y=C), method = 'lm', se = FALSE) +
+            geom_point(data=lets, aes(x=dates, y=D, colour='D')) +   geom_smooth(data=lets, aes(x=dates, y=D), method = 'lm', se = FALSE)
 
 
 
