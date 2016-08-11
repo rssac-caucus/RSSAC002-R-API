@@ -19,8 +19,9 @@
 ## Globals and includes
 options(warn=1)
 .libPaths(".")
-library(yaml, lib.loc=".") ##  Read/write YAML files
-library(ggplot2, lib.loc=".") ## Extended graphing options
+suppressPackageStartupMessages(library("methods"))
+library(yaml) ##  Read/write YAML files
+library(ggplot2) ## Extended graphing options
 
 `%.%` <- function(a, b) paste0(a, b) ## Infix concatenation operator
 rootLetters <- c("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m")
@@ -57,7 +58,7 @@ metricsByDate <- function(letters, startDate, endDate, metrics){
 
     fmt <- "%Y/%m/%d" ## Our date format
     excludeYamlKeys <- c("service", "start-period", "end-period", "metric") ## Top-level YAML keys to never return
-    rv <- list()
+    rv <- list() ## Our return values
     fileLetters <- c() ## Our list of letters to work on
 
     ## TODO: Do some bad input checking and print errors and exit
@@ -122,15 +123,3 @@ metricsByDate <- function(letters, startDate, endDate, metrics){
     }
     return(agg)
 }
-
-##met <- metricsByDate('a',"2016/01/01","2016/01/20", c("unique-sources", "num-sources-ipv6"))
-##met <- metricsByDate('a',"2016/01/01","2016/01/26", c("traffic-sizes", "udp-response-sizes", "192-207"))
-##met <- metricsByDate('a-b',"2016/01/01","2016/01/20", c("traffic-volume", "dns-tcp-queries-received-ipv4"))
-##met <- metricsByDate('a,j',"2016/01/01","2016/01/20", c("rcode-volume", "0"))
-##met <- metricsByDate('a',"2016/01/01","2016/01/20", c("load-time", "2016011000"))
-
-ip6_sources <- metricsByDate('a-c',"2016/01/01","2016/07/01", c("unique-sources", "num-sources-ipv6-aggregate"))
-dates <- seq(as.Date("2016/01/01", "%Y/%m/%d"), len=182, by="1 day")
-png(filename="ip6_sources_aggregate_A.png", bg="white")
-qplot(x=dates, y=ip6_sources)
-
