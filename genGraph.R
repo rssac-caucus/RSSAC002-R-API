@@ -24,8 +24,10 @@ source("rssac002.R") ## Include our RSSAC002 API
 ##met <- metricsByDate('a,j',"2016/01/01","2016/01/20", c("rcode-volume", "0"))
 ##met <- metricsByDate('a',"2016/01/01","2016/01/20", c("load-time", "2016011000"))
 
-ip6_sources <- metricsByDate('a',"2016/01/01","2016/07/01", c("unique-sources", "num-sources-ipv6-aggregate"))
+ip6_sources_j<- metricsByDate('j',"2016/01/01","2016/07/01", c("unique-sources", "num-sources-ipv6-aggregate"))
+ip6_sources_l<- metricsByDate('l',"2016/01/01","2016/07/01", c("unique-sources", "num-sources-ipv6-aggregate"))
+
 dates <- seq(as.Date("2016/01/01", "%Y/%m/%d"), len=182, by="1 day")
 png(filename="ip6_sources_aggregate_A.png", bg="white")
-qplot(x=dates, y=ip6_sources)
+qplot(x=dates, y=ip6_sources_j, geom = "path")
 

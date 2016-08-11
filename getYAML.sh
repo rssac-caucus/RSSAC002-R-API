@@ -33,6 +33,7 @@ function dload {
     DIRS="$(expr $(echo $1 | tr -dc '/' | wc -c) - 3)"
 
     echo "Downloading $1 TO $2"
+    echo "Downloading $1 TO $2" >>$LOGFILE
     $WGET -m -nv -nH -P $2 --cut-dirs $DIRS -A "$2*.yaml" $1 $3 2>&1 |grep .yaml >>$LOGFILE
 }
 
