@@ -95,9 +95,19 @@ ggplot() + labs(title='% IPv6 Sources', y='%', x='2016', colour = 'Root') +
 
 "
 
-met <- metricsByDate('a','2016/01/01','2016/06/05', c('traffic-sizes', 'udp-response-sizes'))
+A <- metricsByDate('a','2016/01/01','2016/06/05', c('traffic-sizes', 'udp-response-sizes'))
+J <- metricsByDate('j','2016/01/01','2016/06/05', c('traffic-sizes', 'udp-response-sizes'))
+
+sizes <- data.frame(t(sapply(A, c, USE.NAMES=TRUE)), check.names = FALSE)
+sizes <- sizes + data.frame(t(sapply(J, c, USE.NAMES=TRUE)), check.names = FALSE)
+
+str(sizes)
 
 
+str(mpg)
+
+png(filename='test.png', width=1000, height=800)
+##ggplot(sizes) +   geom_histogram()
 
 
 
