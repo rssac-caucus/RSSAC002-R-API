@@ -41,19 +41,15 @@ rootLetters <- c("a", "b", "c", "d", "e", "h", "j", "k", "l", "m")
 ##
 ## Returns a vector of values ordered by date
 metricsByDate <- function(letters, startDate, endDate, metrics){
-    ## Encapsulates mess of integer vs double(float)
+    ## Encapsulates mess of integer vs double
+    ## We store everything as double because RAM is cheap
     ## http://r.789695.n4.nabble.com/large-integers-in-R-td1310933.html
     setVal <- function(val){
         if(length(val) == 0){
             cat("setVal passed zero length value", "\n")
             return(as.integer(0))
         }
-
-        if(as.integer(val) < 0){
-            return(as.double(val))
-        }else{
-            return(as.integer(val))
-        }
+        return(as.double(val))
     }
 
     fmt <- "%Y/%m/%d" ## Our date format
@@ -110,12 +106,25 @@ metricsByDate <- function(letters, startDate, endDate, metrics){
                 }
 
                 if(length(metrics) == 2){
-                    rv[[let]] <- append(rv[[let]], setVal(yam[[metrics[2]]]))
+                    if(metrics[1] == 'traffic-sizes'){ ## Special case traffic-sizes
+                        if(! is.list(rv[let])){ rv[let] <- list() }
+                        for(ii in 1:length(yam[metrics[[2]]][[1]][[1]]  )){ ## List indices? More like list indecents
+                            key <- names(yam[metrics[2]][[1]][[1]][ii])
+                            value <- yam[metrics[2]][[1]][[1]][ii]
+                            if(key %in% names(rv[[let]])){
+                                rv[[let]][[key]] <- rv[[let]][[key]] + setVal(value)
+                            }else{
+                                rv[[let]][[key]] <- setVal(value)
+                            }
+                        }
+                    }else{
+                        rv[[let]] <- append(rv[[let]], setVal(yam[[metrics[2]]]))
+                    }
                 }else{
                     rv[[let]] <- append(rv[[let]], setVal(yam[metrics[2]][[1]][[1]][[metrics[3]]]))
                 }
-            }else{ ## No file for this date, fill with Not-a-Number(NaN)
-                cat("Missing " %.% f, "\n")
+            }else{ ## No file for this date, fill with Not-a-Number(NaN) and warn user
+                cat("Warn:Missing " %.% f, "\n")
                 rv[[let]] <- append(rv[[let]], NaN)
             }
             ## Increment activeDate
@@ -124,9 +133,16 @@ metricsByDate <- function(letters, startDate, endDate, metrics){
     }
 
     ## Compute aggregate
-    agg = c(0)
-    for(let in fileLetters){
-        agg <- agg + rv[[let]]
+    if(is.list(rv[1])){ ## Special case traffic-sizes
+        agg <- mapply(function(x) 0, rv[[1]], USE.NAMES=TRUE, SIMPLIFY=FALSE)
+        for(let in fileLetters){
+            agg <- mapply(function(x,y) x+y, rv[[let]], agg, USE.NAMES=TRUE, SIMPLIFY=FALSE)
+        }
+    }else{
+        agg = c(0)
+        for(let in fileLetters){
+            agg <- agg + rv[[let]]
+        }
     }
     return(agg)
 }

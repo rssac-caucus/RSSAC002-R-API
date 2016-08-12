@@ -46,6 +46,7 @@ png(filename='test.png', bg='white')
 ggplot() + geom_ribbon(data = d, aes(x = days, y=p, ymax=p+1, ymin=p-1)) 
 "
 
+example <- "
 A4 <- metricsByDate('a', '2016/01/01','2016/07/01', c('unique-sources', 'num-sources-ipv4'))
 A6 <- metricsByDate('a', '2016/01/01','2016/07/01', c('unique-sources', 'num-sources-ipv6'))
 
@@ -55,14 +56,18 @@ C6 <- metricsByDate('c', '2016/01/01','2016/07/01', c('unique-sources', 'num-sou
 D4 <- metricsByDate('d', '2016/01/01','2016/07/01', c('unique-sources', 'num-sources-ipv4'))
 D6 <- metricsByDate('d', '2016/01/01','2016/07/01', c('unique-sources', 'num-sources-ipv6'))
 
+Agg4 <- metricsByDate('a,c,d,h,j-m', '2016/01/01','2016/07/01', c('unique-sources', 'num-sources-ipv4'))
+Agg6 <- metricsByDate('a,c,d,h,j-m', '2016/01/01','2016/07/01', c('unique-sources', 'num-sources-ipv6'))
+
 A <- A6 / (A4+A6) * 100
 C <- C6 / (C4+C6) * 100
 D <- D6 / (D4+D6) * 100
+Agg <- Agg6 / (Agg4+Agg6) * 100
 
-lets <- data.frame(dates=days, A=A, C=C, D=D)
+lets <- data.frame(dates=days, A=A, C=C, D=D, Agg=Agg)
 
 png(filename='test.png', width=1000, height=800)
-
+"
 
 example <- "
 ggplot(lets, aes(A)) + labs(title='Density IPv6 Sources A Root', y='Density', x='%') +
@@ -81,15 +86,16 @@ ggplot() + labs(title='% IPv6 Sources', y='%', x='2016', colour = 'Root') +
 ## TODO: Investigate quantile library 
 ##ggplot(lets, aes(dates, A)) + geom_point() + geom_quantile()
 
-
+example <- "
 ggplot() + labs(title='% IPv6 Sources', y='%', x='2016', colour = 'Root') +
     geom_point(data=lets, aes(x=dates, y=A, colour='A')) +   geom_smooth(data=lets, aes(x=dates, y=A), method = 'lm', se = FALSE) +
         geom_point(data=lets, aes(x=dates, y=C, colour='C')) +   geom_smooth(data=lets, aes(x=dates, y=C), method = 'lm', se = FALSE) +
-            geom_point(data=lets, aes(x=dates, y=D, colour='D')) +   geom_smooth(data=lets, aes(x=dates, y=D), method = 'lm', se = FALSE)
+            geom_point(data=lets, aes(x=dates, y=D, colour='D')) +   geom_smooth(data=lets, aes(x=dates, y=D), method = 'lm', se = FALSE) +
+                geom_point(data=lets, aes(x=dates, y=Agg, colour='Aggregate')) +   geom_smooth(data=lets, aes(x=dates, y=Agg), method = 'lm', se = FALSE)
 
+"
 
-
-
+met <- metricsByDate('a','2016/01/01','2016/06/05', c('traffic-sizes', 'udp-response-sizes'))
 
 
 
