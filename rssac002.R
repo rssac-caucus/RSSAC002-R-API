@@ -21,7 +21,7 @@ options(warn=1)
 .libPaths(".")
 suppressPackageStartupMessages(library("methods"))
 library(yaml) ##  Read/write YAML files
-library(ggplot2) ## Extended graphing options
+
 
 `%.%` <- function(a, b) paste0(a, b) ## Infix concatenation operator
 rootLetters <- c("a", "b", "c", "d", "e", "h", "j", "k", "l", "m")
