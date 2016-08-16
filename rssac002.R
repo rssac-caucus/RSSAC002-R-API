@@ -22,7 +22,6 @@ options(warn=1)
 suppressPackageStartupMessages(library("methods"))
 library(yaml) ##  Read/write YAML files
 
-
 `%.%` <- function(a, b) paste0(a, b) ## Infix concatenation operator
 rootLetters <- c("a", "b", "c", "d", "e", "h", "j", "k", "l", "m")
 
@@ -133,7 +132,7 @@ metricsByDate <- function(letters, startDate, endDate, metrics){
     }
 
     ## Compute aggregate
-    if(is.list(rv[1])){ ## Special case traffic-sizes, doesn't really work with aggregates
+    if(is.list(rv[[1]])){ ## Special case traffic-sizes, doesn't really work with aggregates
         agg <- mapply(function(x) 0, rv[[1]], USE.NAMES=TRUE, SIMPLIFY=FALSE)
         for(let in fileLetters){
             agg <- mapply(function(x,y) x+y, rv[[let]], agg, USE.NAMES=TRUE, SIMPLIFY=FALSE)
