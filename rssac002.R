@@ -31,8 +31,8 @@ rootLetters <- c("a", "b", "c", "d", "e", "h", "j", "k", "l", "m")
 ## letters MUST be given in order(e.g. a-d,f,l-m), white space is not allowed
 ## If letters is not a single letter, an aggregate will be returned
 ##
-## startDate and endDate take the form YYYY/MM/DD, endDate will not be included
-## Invalid DD values can be used for endDate if(DD < 32) Example: 2016/02/30
+## startDate and endDate take the form YYYY-MM-DD, endDate will not be included
+## Invalid DD values can be used for endDate if(DD < 32) Example: 2016-02-30
 ##
 ## metrics is a vector of requested metrics as strings arranged in a hierarchy to identify a single vector of values
 ## The first and second entry of metrics are required
@@ -53,7 +53,7 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
         return(as.double(val))
     }
 
-    fmt <- "%Y/%m/%d" ## Our date format
+    fmt <- "%Y-%m-%d" ## Our date format
     excludeYamlKeys <- c("service", "start-period", "end-period", "metric") ## Top-level YAML keys to never return
     rv <- list() ## Our return values
     fileLetters <- c() ## Our list of letters to work on
@@ -90,8 +90,8 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
     ## Read files from disk and fill rv
     for(let in fileLetters){
         rv[let] <- c()
-        activeDate <- unlist(strsplit(startDate, "/"))
-        endDate <- unlist(strsplit(endDate, "/"))
+        activeDate <- unlist(strsplit(startDate, "-"))
+        endDate <- unlist(strsplit(endDate, "-"))
         while(! all(activeDate == endDate)){
             ##cat("Parsing " %.% let %.% "-root", "\n")
             fn <- paste(let, "root", activeDate[1] %.% activeDate[2] %.% activeDate[3], metrics[1], sep="-") %.% ".yaml"
@@ -130,7 +130,7 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
                 rv[[let]] <- append(rv[[let]], NaN)
             }
             ## Increment activeDate
-            activeDate <- unlist(strsplit(format(as.Date(paste(activeDate, collapse="/"), fmt) + 1, fmt), "/"))
+            activeDate <- unlist(strsplit(format(as.Date(paste(activeDate, collapse="-"), fmt) + 1, fmt), "-"))
         }
     }
 
@@ -146,6 +146,5 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
             agg <- agg + rv[[let]]
         }
     }
-    str(agg)
     return(agg)
 }
