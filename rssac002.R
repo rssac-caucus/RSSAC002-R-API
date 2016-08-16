@@ -18,13 +18,15 @@
 
 ## Globals and includes
 options(warn=1)
-.libPaths(".")
+.libPaths(c(.libPaths(), "."))
 suppressPackageStartupMessages(library("methods"))
 library(yaml) ##  Read/write YAML files
 
 `%.%` <- function(a, b) paste0(a, b) ## Infix concatenation operator
 rootLetters <- c("a", "b", "c", "d", "e", "h", "j", "k", "l", "m")
 
+## path is the relative or absolute location of the rssac002 data files
+##
 ## letters can be a single letter(a), a range(a-c), a list(a,b,g), or a combination of all 3
 ## letters MUST be given in order(e.g. a-d,f,l-m), white space is not allowed
 ## If letters is not a single letter, an aggregate will be returned
@@ -39,7 +41,7 @@ rootLetters <- c("a", "b", "c", "d", "e", "h", "j", "k", "l", "m")
 ## c("rcode-volume", "10"), 
 ##
 ## Returns a vector of values ordered by date
-metricsByDate <- function(letters, startDate, endDate, metrics){
+metricsByDate <- function(path, letters, startDate, endDate, metrics){
     ## Encapsulates mess of integer vs double
     ## We store everything as double because RAM is cheap
     ## http://r.789695.n4.nabble.com/large-integers-in-R-td1310933.html
@@ -56,7 +58,8 @@ metricsByDate <- function(letters, startDate, endDate, metrics){
     rv <- list() ## Our return values
     fileLetters <- c() ## Our list of letters to work on
 
-    ## TODO: Do some bad input checking and print errors and exit
+    ## TODO: Do more bad input checking and print errors and exit
+    if(! substr(path, nchar(path), nchar(path)) == '/') { path <- path %.% '/' } ## Append / to path if necessary
     
     ## Generate our list of letters
     letters <- tolower(letters)
@@ -92,7 +95,7 @@ metricsByDate <- function(letters, startDate, endDate, metrics){
         while(! all(activeDate == endDate)){
             ##cat("Parsing " %.% let %.% "-root", "\n")
             fn <- paste(let, "root", activeDate[1] %.% activeDate[2] %.% activeDate[3], metrics[1], sep="-") %.% ".yaml"
-            fp <- file.path(let %.% "-root", activeDate[1], activeDate[2], metrics[1]) %.% "/"
+            fp <- file.path(path %.% let %.% "-root", activeDate[1], activeDate[2], metrics[1]) %.% "/"
             f <- fp %.% fn
             if(file.exists(f)){
                 ##cat("exists  " %.% f, "\n")
@@ -143,5 +146,6 @@ metricsByDate <- function(letters, startDate, endDate, metrics){
             agg <- agg + rv[[let]]
         }
     }
+    str(agg)
     return(agg)
 }
