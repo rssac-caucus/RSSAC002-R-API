@@ -99,7 +99,7 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
             f <- fp %.% fn
             if(file.exists(f)){
                 ##cat("exists  " %.% f, "\n")
-                yamtmp <- yaml.load_file(f)
+                yamtmp <- yaml.load_file(f, handlers=list(int=function(x) { as.double(x) })) ## Interpret integers as doubles
                 yam <- list()
                 for(ii in 1:length(yamtmp)){ ## Remove excluded keys from yaml
                     if(! names(yamtmp[ii]) %in% excludeYamlKeys){
@@ -110,7 +110,7 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
                 if(length(metrics) == 2){
                     if(metrics[1] == 'traffic-sizes'){ ## Special case traffic-sizes
                         if(! is.list(rv[let])){ rv[let] <- list() }
-                        for(ii in 1:length(yam[metrics[[2]]][[1]][[1]]  )){ ## List indices? More like list indecents
+                        for(ii in 1:length(yam[metrics[[2]]][[1]][[1]] )){ ## List indices? More like list indecents
                             key <- names(yam[metrics[2]][[1]][[1]][ii])
                             value <- yam[metrics[2]][[1]][[1]][ii]
                             if(key %in% names(rv[[let]])){
