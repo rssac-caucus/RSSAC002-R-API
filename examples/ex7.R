@@ -30,7 +30,6 @@ for(ii in 1:20){
     maxK[nms[idx]] = K[[idx]]
     K[idx] <- 0
 }
-str(maxK)
 
 sizes <- data.frame(labels=names(maxK), k=unlist(maxK))
 levels(sizes$labels) <- c(names(maxK)) ## Orders our bar graph by occurrence
@@ -38,3 +37,4 @@ levels(sizes$labels) <- c(names(maxK)) ## Orders our bar graph by occurrence
 png(filename='ex7.png', width=1000, height=800)
 ggplot(sizes, aes(labels)) + labs(title = "20 Most Common UDP Response Packet Sizes", x='', y='') +
     geom_bar(stat='identity', aes(y=k)) + coord_polar()
+
