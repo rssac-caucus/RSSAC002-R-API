@@ -60,7 +60,16 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
 
     ## TODO: Do more bad input checking and print errors and exit
     if(! substr(path, nchar(path), nchar(path)) == '/') { path <- path %.% '/' } ## Append / to path if necessary
-    
+
+    ## Determine what type of return value we're producing
+    ## A collection of special cases
+    rvType = 'vector'
+    if(length(metrics) == 2){
+        if(metrics[1] == 'traffic-sizes'){ ## Special case traffic-sizes
+            rvType = 'list'
+        }
+    }
+
     ## Generate our list of letters
     letters <- tolower(letters)
     toks <- unlist(strsplit(letters, ""))
@@ -71,7 +80,6 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
             quit()
         }
     }
-
     while(ii < length(toks)){
         ii <- ii + 1
         if(charmatch(toks[ii], rootLetters, nomatch=-1) != -1){
@@ -89,7 +97,8 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
 
     ## Read files from disk and fill rv
     for(let in fileLetters){
-        rv[let] <- c()
+        if(rvType == 'vector') { rv[let] <- c() }
+        else if(rvType == 'list') { rv[let] <- list() }
         activeDate <- unlist(strsplit(startDate, "-"))
         endDate <- unlist(strsplit(endDate, "-"))
         while(! all(activeDate == endDate)){
@@ -108,14 +117,14 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
                 }
 
                 if(length(metrics) == 2){
-                    if(metrics[1] == 'traffic-sizes'){ ## Special case traffic-sizes
-                        if(! is.list(rv[let])){ rv[let] <- list() }
+                    if(metrics[1] == 'traffic-sizes'){ ## Special case traffic-sizes, possibly can make more general
                         for(ii in 1:length(yam[metrics[[2]]][[1]][[1]] )){ ## List indices? More like list indecents
                             key <- names(yam[metrics[2]][[1]][[1]][ii])
-                            value <- yam[metrics[2]][[1]][[1]][ii]
+                            value <- yam[metrics[2]][[1]][[1]][ii][[1]]
                             if(key %in% names(rv[[let]])){
                                 rv[[let]][[key]] <- rv[[let]][[key]] + setVal(value)
                             }else{
+                                ##cat(as.double(value), "\n")
                                 rv[[let]][[key]] <- setVal(value)
                             }
                         }
@@ -134,9 +143,11 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
         }
     }
 
-    ## Compute aggregate
-    if(is.list(rv[[1]])){ ## Special case traffic-sizes, doesn't really work with aggregates
+    ## Compute aggregate and return
+    if(rvType == 'list'){ ## doesn't really work with aggregates
         agg <- mapply(function(x) 0, rv[[1]], USE.NAMES=TRUE, SIMPLIFY=FALSE)
+        cat("Its a list", "\n")
+        str(agg)
         for(let in fileLetters){
             agg <- mapply(function(x,y) x+y, rv[[let]], agg, USE.NAMES=TRUE, SIMPLIFY=FALSE)
         }
