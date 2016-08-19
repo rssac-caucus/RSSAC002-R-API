@@ -47,7 +47,7 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
     ## http://r.789695.n4.nabble.com/large-integers-in-R-td1310933.html
     setVal <- function(val){
         if(length(val) == 0){
-            cat("setVal passed zero length value", "\n")
+            ##cat("setVal passed zero length value", "\n")
             return(as.integer(0))
         }
         return(as.double(val))
