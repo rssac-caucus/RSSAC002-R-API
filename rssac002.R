@@ -98,7 +98,7 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
     ## Read files from disk and fill rv
     for(let in fileLetters){
         if(rvType == 'vector') { rv[let] <- c() }
-        else if(rvType == 'list') { rv[let] <- list() }
+        else if(rvType == 'list') { rv[[let]] <- list() }
         activeDate <- unlist(strsplit(startDate, "-"))
         endDate <- unlist(strsplit(endDate, "-"))
         while(! all(activeDate == endDate)){
@@ -145,13 +145,15 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
 
     ## Compute aggregate and return
     if(rvType == 'list'){ ## doesn't really work with aggregates
-        agg <- mapply(function(x) 0, rv[[1]], USE.NAMES=TRUE, SIMPLIFY=FALSE)
-        cat("Its a list", "\n")
-        str(agg)
-        for(let in fileLetters){
-            agg <- mapply(function(x,y) x+y, rv[[let]], agg, USE.NAMES=TRUE, SIMPLIFY=FALSE)
+        for(ii in 1:length(rv)){
+            agg <- mapply(function(x) 0, rv[[ii]], USE.NAMES=TRUE, SIMPLIFY=FALSE)
         }
-    }else{
+        for(let in fileLetters){
+            for(key in names(rv[[let]])){
+                agg[[key]] <- as.double(agg[[key]]) + as.double(rv[[let]][[key]])
+            }
+        }
+    }else if(rvType == 'vector'){
         agg = c(0)
         for(let in fileLetters){
             agg <- agg + rv[[let]]
