@@ -20,28 +20,27 @@ suppressPackageStartupMessages(library("methods"))
 .libPaths(c(.libPaths(), "../"))
 source('../rssac002.R') ## Include our RSSAC002 API
 library(ggplot2) ## Our graphing library
+library(reshape2) ## Allows data melting
 
+mvec <- list()
 for(ii in seq(0, 272, by=16)){
     idx <- as.character(ii) %.% '-' %.% as.character(ii+15)
-    vec <- metricsByDate('..', 'a','2016-01-01','2016-03-01', c('traffic-sizes', 'udp-request-sizes', as.character(idx)))
+    vec <- metricsByDate('..', 'A, H, J, K, L, M','2016-01-01','2016-07-01', c('traffic-sizes', 'udp-request-sizes', as.character(idx)))
+    ## mvec[[idx]] <- mean(vec, na.rm=TRUE) ## We might want to order these later, once we figure out how
+
     if(ii == 0){
-        queries <- data.frame('x0_15' = vec, check.names=FALSE)
+        queries <- data.frame('0-15' = vec, check.names=FALSE)
     }else{
-        queries[['x' %.% gsub('-', '_', idx)]] <- vec
+        queries[[idx]] <- vec
     }
 }
-queries[['x288']] <- metricsByDate('..', 'a','2016-01-01','2016-03-01', c('traffic-sizes', 'udp-request-sizes', as.character('288-')))
-queries[['dates']] <- seq(as.Date('2016-01-01'), by='days', along.with=queries[['x288']])
+queries[['288+']] <- metricsByDate('..', 'A, H, J, K, L, M','2016-01-01','2016-07-01', c('traffic-sizes', 'udp-request-sizes', as.character('288-')))
+queries[['dates']] <- seq(as.Date('2016-01-01'), by='days', along.with=queries[['288+']])
 
 png(filename='ex10.png', width=1000, height=800)
 
-## Maybe if I new R better my code wouldn't be so disgusting, but somehow I doubt it
-ggplot(queries, aes(x=dates)) + labs(title = "UDP Requests by Size Ranges", x='Days', y='Requests log(n)', colour = 'Size Ranges') +
-geom_line(aes(y=x0_15, colour='0-15')) + geom_line(aes(y=x32_47, colour='32-47')) + geom_line(aes(y=x48_63, colour='48-63')) +
-    geom_line(aes(y=x64_79, colour='64-79')) + geom_line(aes(y=x80_95, colour='80-95')) + geom_line(aes(y=x96_111, colour='96-111')) +
-        geom_line(aes(y=x112_127, colour='112-127')) + geom_line(aes(y=x128_143, colour='128-143')) + geom_line(aes(y=x144_159, colour='144-159')) +
-            geom_line(aes(y=x160_175, colour='160-175')) + geom_line(aes(y=x176_191, colour='176-191')) + geom_line(aes(y=x192_207, colour='192-207')) +
-                geom_line(aes(y=x208_223, colour='208-223')) + geom_line(aes(y=x224_239, colour='224-239')) + geom_line(aes(y=x240_255, colour='240-255')) +
-                    geom_line(aes(y=x256_271, colour='256-271')) + geom_line(aes(y=x272_287, colour='272-287')) + geom_line(aes(y=x288, colour='288-')) +
-                        scale_y_continuous(trans='log')
+ggplot(data=melt(queries, id="dates") , aes(x=dates, y=value, colour=variable)) +
+    labs(title = 'Timeseries of UDP Requests by Byte Size \n A, H, J, K, L, M', x='Days', y='Requests log(n)', colour = 'Size Ranges') +
+        geom_line() + scale_y_continuous(trans='log')
+
 

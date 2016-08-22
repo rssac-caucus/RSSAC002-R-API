@@ -136,7 +136,6 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
                         rv[[let]] <- append(rv[[let]], setVal(yam[[metrics[2]]]))
                     }
                 }else{
-                    ##str(yam[metrics[2]][[1]][[1]][[metrics[3]]])
                     rv[[let]] <- append(rv[[let]], setVal(yam[metrics[2]][[1]][[1]][[metrics[3]]]))
                 }
             }else{ ## No file for this date, fill with Not-a-Number(NaN) and warn user
