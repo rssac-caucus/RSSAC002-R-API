@@ -30,5 +30,6 @@ dj <- data.frame(let=ip6_sources_j, dates=days)
 dl <- data.frame(let=ip6_sources_l, dates=days)
 
 png(filename='ex1.png', bg='white')
-ggplot() + geom_point(data = dj, aes(x = days, y=let)) + geom_point(data = dl, aes(x = days, y = let), colour = 'red')
+ggplot() +  labs(title = 'IPv6 /64 Networks Seen Time series', x='2016', y='IPv6 /64 Networks', colour = 'Root') +
+    geom_point(data = dj, aes(x = days, y=let, colour='J')) + geom_point(data = dl, aes(x = days, y = let, colour='L'))
 
