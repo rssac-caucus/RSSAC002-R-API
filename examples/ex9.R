@@ -35,5 +35,3 @@ ggplot(sources, aes(x=dates, colour="IP Source Type")) + labs(title = "IP Source
     geom_line(aes(y=ip4, colour='IPv4')) + geom_line(aes(y=ip6, colour='IPv6')) +
         geom_line(aes(y=ip6agg, colour='IPv6 Aggregate /64')) +
             scale_y_continuous(trans='log')
-
-    

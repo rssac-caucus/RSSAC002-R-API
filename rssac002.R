@@ -50,7 +50,7 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
             ##cat("setVal passed zero length value", "\n")
             return(as.integer(0))
         }
-        return(as.double(val))
+        return(as.double(unlist(val)))
     }
 
     fmt <- "%Y-%m-%d" ## Our date format
@@ -60,6 +60,10 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
 
     ## TODO: Do more bad input checking and print errors and exit
     if(! substr(path, nchar(path), nchar(path)) == '/') { path <- path %.% '/' } ## Append / to path if necessary
+    if(! (length(metrics) != 2 || length(metrics) != 3)){
+        cat("Bad length of metrics argument len=" %.% length(metrics), "\n")
+        quit()
+    }
 
     ## Determine what type of return value we're producing
     ## A collection of special cases
@@ -71,7 +75,7 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
     }
 
     ## Generate our list of letters
-    letters <- tolower(letters)
+    letters <- gsub(' ', '', tolower(letters))
     toks <- unlist(strsplit(letters, ""))
     ii <- 0
     for(t in toks){
@@ -132,6 +136,7 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
                         rv[[let]] <- append(rv[[let]], setVal(yam[[metrics[2]]]))
                     }
                 }else{
+                    ##str(yam[metrics[2]][[1]][[1]][[metrics[3]]])
                     rv[[let]] <- append(rv[[let]], setVal(yam[metrics[2]][[1]][[1]][[metrics[3]]]))
                 }
             }else{ ## No file for this date, fill with Not-a-Number(NaN) and warn user
