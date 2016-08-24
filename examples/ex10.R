@@ -21,26 +21,37 @@ suppressPackageStartupMessages(library("methods"))
 source('../rssac002.R') ## Include our RSSAC002 API
 library(ggplot2) ## Our graphing library
 library(reshape2) ## Allows data melting
+meanNA <- function(x){ ## Required for all the missing files
+    mean(x, na.rm=TRUE)
+}
 
-mvec <- list()
-for(ii in seq(0, 272, by=16)){
+numMetrics = 10 ## How many metrics do we want to graph, take the largest numMetrics of vectors
+
+tmp <- list(tmp=c(0))
+for(ii in seq(0, 288, by=16)){
     idx <- as.character(ii) %.% '-' %.% as.character(ii+15)
-    vec <- metricsByDate('..', 'A, H, J, K, L, M','2016-01-01','2016-07-01', c('traffic-sizes', 'udp-request-sizes', as.character(idx)))
-    ## mvec[[idx]] <- mean(vec, na.rm=TRUE) ## We might want to order these later, once we figure out how
-
-    if(ii == 0){
-        queries <- data.frame('0-15' = vec, check.names=FALSE)
+    if(ii == 288){
+        vec <- metricsByDate('..', 'A, H, J, K, L, M','2016-01-01','2016-07-01', c('traffic-sizes', 'udp-request-sizes', as.character('288-')))
     }else{
-        queries[[idx]] <- vec
+        vec <- metricsByDate('..', 'A, H, J, K, L, M','2016-01-01','2016-07-01', c('traffic-sizes', 'udp-request-sizes', as.character(idx)))
+    }
+    
+    if(meanNA(vec) > min(sapply(tmp, meanNA))){
+        tmp[[idx]] <- vec
+        if(length(tmp) > numMetrics){
+            tmp[[names(which.min(sapply(tmp, meanNA)))]] <- NULL
+        }
     }
 }
-queries[['288+']] <- metricsByDate('..', 'A, H, J, K, L, M','2016-01-01','2016-07-01', c('traffic-sizes', 'udp-request-sizes', as.character('288-')))
-queries[['dates']] <- seq(as.Date('2016-01-01'), by='days', along.with=queries[['288+']])
+
+queries <- data.frame(dates=seq(as.Date('2016-01-01'), by='days', along.with=tmp[[1]]))
+for(ii in 1:length(tmp)){
+    queries[[names(tmp[ii])]] <- tmp[[ii]]
+}
 
 png(filename='ex10.png', width=1000, height=800)
-
 ggplot(data=melt(queries, id="dates") , aes(x=dates, y=value, colour=variable)) +
     labs(title = 'Timeseries of UDP Requests by Byte Size \n A, H, J, K, L, M', x='Days', y='Requests log(n)', colour = 'Size Ranges') +
-        geom_line() + scale_y_continuous(trans='log')
-
+        geom_line() + scale_y_continuous(trans='log10', breaks = scales::trans_breaks("log10", function(x) 10^x),
+            labels=scales::trans_format("log10", scales::math_format(10^.x)))
 
