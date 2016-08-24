@@ -43,11 +43,8 @@ for(ii in seq(0, 288, by=16)){
         }
     }
 }
-
-queries <- data.frame(dates=seq(as.Date('2016-01-01'), by='days', along.with=tmp[[1]]))
-for(ii in 1:length(tmp)){
-    queries[[names(tmp[ii])]] <- tmp[[ii]]
-}
+queries <- data.frame(tmp, check.names=FALSE, stringsAsFactors=FALSE)
+queries[['dates']] <- seq(as.Date('2016-01-01'), by='days', along.with=tmp[[1]])
 
 png(filename='ex10.png', width=1000, height=800)
 ggplot(data=melt(queries, id="dates") , aes(x=dates, y=value, colour=variable)) +
