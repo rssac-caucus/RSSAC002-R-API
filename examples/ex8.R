@@ -34,6 +34,6 @@ png(filename='ex8.png', width=1000, height=800)
 ggplot(queries, aes(x=dates, colour="Request Type")) + labs(title = "DNS Requests", x='Days', y='Requests log(n)') +
     geom_line(aes(y=udp4, colour='UDP IPv4')) + geom_line(aes(y=tcp4, colour='TCP IPv4')) +
         geom_line(aes(y=udp6, colour='UDP IPv6')) + geom_line(aes(y=tcp6, colour='TCP IPv6')) +
-            scale_y_continuous(trans='log')
-
+            scale_y_continuous(trans='log10', breaks = scales::trans_breaks("log10", function(x) 10^x),
+                               labels=scales::trans_format("log10", scales::math_format(10^.x)))
     
