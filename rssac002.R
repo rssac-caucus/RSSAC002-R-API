@@ -152,12 +152,11 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
         agg <- list()
         for(let in fileLetters){
             for(key in names(rv[[let]])){
-                if(key %in% agg){
+                if(key %in% names(agg)){
                     agg[[key]] <- as.double(agg[[key]]) + as.double(rv[[let]][[key]])
                 }else{
                     agg[[key]] <- as.double(rv[[let]][[key]])
                 }
-                
             }
         }
     }else if(rvType == 'vector'){
