@@ -128,7 +128,7 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
                             if(key %in% names(rv[[let]])){
                                 rv[[let]][[key]] <- rv[[let]][[key]] + setVal(value)
                             }else{
-                                ##cat(as.double(value), "\n")
+                                ##cat("let:" %.% let %.% " key:" %.% key %.% " val:" %.% as.double(value), "\n")
                                 rv[[let]][[key]] <- setVal(value)
                             }
                         }
@@ -148,13 +148,16 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
     }
 
     ## Compute aggregate and return
-    if(rvType == 'list'){ ## doesn't really work with aggregates
-        for(ii in 1:length(rv)){
-            agg <- mapply(function(x) 0, rv[[ii]], USE.NAMES=TRUE, SIMPLIFY=FALSE)
-        }
+    if(rvType == 'list'){
+        agg <- list()
         for(let in fileLetters){
             for(key in names(rv[[let]])){
-                agg[[key]] <- as.double(agg[[key]]) + as.double(rv[[let]][[key]])
+                if(key %in% agg){
+                    agg[[key]] <- as.double(agg[[key]]) + as.double(rv[[let]][[key]])
+                }else{
+                    agg[[key]] <- as.double(rv[[let]][[key]])
+                }
+                
             }
         }
     }else if(rvType == 'vector'){
