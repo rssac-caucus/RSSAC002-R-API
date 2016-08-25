@@ -140,7 +140,9 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
                 }
             }else{ ## No file for this date, fill with Not-a-Number(NaN) and warn user
                 cat("Warn:Missing " %.% f, "\n")
-                rv[[let]] <- append(rv[[let]], NaN)
+                if(rvType == 'vector'){
+                    rv[[let]] <- append(rv[[let]], NaN)
+                }
             }
             ## Increment activeDate
             activeDate <- unlist(strsplit(format(as.Date(paste(activeDate, collapse="-"), fmt) + 1, fmt), "-"))
