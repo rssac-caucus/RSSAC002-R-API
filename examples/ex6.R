@@ -20,18 +20,46 @@ suppressPackageStartupMessages(library("methods"))
 .libPaths(c(.libPaths(), "../"))
 source('../rssac002.R') ## Include our RSSAC002 API
 library(ggplot2) ## Our graphing library
+library(reshape2)
 
-maxN <- function(ll, N){ ## Return N most maximum values from a list preserving names and order
+## Return N most maximum values from a list preserving names and order
+maxN <- function(ll, N){ 
     while(length(ll) > N){ ll[[names(which.min(ll))]] <- NULL }
     return(ll)
 }
 
-udpResponses <- maxN(metricsByDate('..', 'A, H, J, K, L, M','2016-01-01','2016-01-03', c('traffic-sizes', 'udp-response-sizes')), 20)
+## Compute percentage of total for each value in a list preserving names and order, r == num digits to right of decimal
+perc <- function(ll, r=2){
+    tot <- sum(unlist(ll))
+    sapply(ll, function(x) round((x / tot) * 100, digits=r), simplify=FALSE)
+}
 
-sizes <- data.frame(labels=names(udpResponses), agg=unlist(udpResponses))
-levels(sizes$labels) <- c(names(udpResponses)) ## Orders our bar graph by size ranges
+startDate <- '2016-01-01'
+endDate <- '2016-07-01'
+agg <- maxN(perc(metricsByDate('..', 'A, H, J, K, L, M', startDate, endDate, c('traffic-sizes', 'udp-response-sizes'))), 10)
 
-png(filename='ex6.png', width=1000, height=800)
-ggplot(sizes, aes(labels)) + labs(title = "Count of UDP Response Packets by Size \n A, H, J, K, L, M", x="Sizes", y="Count Packets") +
-    geom_bar(stat='identity', aes(y=agg))
+## Grab same metrics as what's in agg for each letter
+lets <- list()
+for(let in list('A', 'H', 'J', 'K', 'L', 'M')){
+    lets[[let]] <- list()
+    tmp <- perc(metricsByDate('..', let, startDate, endDate, c('traffic-sizes', 'udp-response-sizes')))
+    for(key in names(agg)){
+        lets[[let]][[key]] <- tmp[[key]]
+    }
+}
+
+sizes <- melt(data.frame(labels=names(agg), Aggregate=unlist(agg), A=unlist(lets[['A']]), H=unlist(lets[['H']]), J=unlist(lets[['J']]),
+                     K=unlist(lets[['K']]), L=unlist(lets[['L']]), M=unlist(lets[['M']])), id='labels', variable.name='Root')
+levels(sizes$labels) <- c(names(agg)) ## Orders our bar graph by size ranges
+
+png(filename='ex6.png', width=1500, height=800)
+ggplot(sizes, aes(x=labels, y=value, fill=Root)) + labs(title = "Top 10 Aggregate UDP Responses Sizes per root", x="Packet Size Ranges", y="% of all UDP responses") +
+    geom_bar(stat='identity', position='dodge')
+
+        ##scale_y_continuous(breaks=pretty(unlist(A[['vals']])))
+
+
+
+
+
 
