@@ -22,18 +22,6 @@ source('../rssac002.R') ## Include our RSSAC002 API
 library(ggplot2) ## Our graphing library
 library(reshape2)
 
-## Return N most maximum values from a list preserving names and order
-maxN <- function(ll, N){ 
-    while(length(ll) > N){ ll[[names(which.min(ll))]] <- NULL }
-    return(ll)
-}
-
-## Compute percentage of total for each value in a list preserving names and order, r == num digits to right of decimal
-perc <- function(ll, r=2){
-    tot <- sum(unlist(ll))
-    sapply(ll, function(x) round((x / tot) * 100, digits=r), simplify=FALSE)
-}
-
 startDate <- '2016-01-01'
 endDate <- '2016-07-01'
 agg <- maxN(perc(metricsByDate('..', 'A, H, J, K, L, M', startDate, endDate, c('traffic-sizes', 'udp-response-sizes'))), 10)
@@ -53,13 +41,7 @@ sizes <- melt(data.frame(labels=names(agg), Aggregate=unlist(agg), A=unlist(lets
 levels(sizes$labels) <- c(names(agg)) ## Orders our bar graph by size ranges
 
 png(filename='ex6.png', width=1500, height=800)
-ggplot(sizes, aes(x=labels, y=value, fill=Root)) + labs(title = "Top 10 Aggregate UDP Responses Sizes per root", x="Packet Size Ranges", y="% of all UDP responses") +
-    geom_bar(stat='identity', position='dodge')
-
-        ##scale_y_continuous(breaks=pretty(unlist(A[['vals']])))
-
-
-
-
-
+ggplot(sizes, aes(x=labels, y=value, fill=Root)) +
+    labs(title = "Top 10 Aggregate UDP Responses Sizes per root", x="Packet Size Ranges", y="% of all UDP responses") +
+        geom_bar(stat='identity', position='dodge')
 

@@ -169,3 +169,20 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
     }
     return(agg)
 }
+
+## Return N most maximum values from a list preserving names and order
+## ll is a list
+## N is number of elements to return
+maxN <- function(ll, N){ 
+    while(length(ll) > N){ ll[[names(which.min(ll))]] <- NULL }
+    return(ll)
+}
+
+## Compute percentage of total for each value in a list preserving names and order
+## ll is a list of numeric values
+## r is passed to round() as digits=r
+perc <- function(ll, r=2){
+    tot <- sum(unlist(ll))
+    sapply(ll, function(x) round((x / tot) * 100, digits=r), simplify=FALSE)
+}
+
