@@ -21,17 +21,21 @@ suppressPackageStartupMessages(library("methods"))
 source('../rssac002.R') ## Include our RSSAC002 API
 library(ggplot2) ## Our graphing library
 
-U4 <- metricsByDate('..', 'a','2016-01-01','2016-07-01', c('traffic-volume', 'dns-udp-queries-received-ipv4'))
-U6 <- metricsByDate('..', 'a','2016-01-01','2016-07-01', c('traffic-volume', 'dns-udp-queries-received-ipv6'))
-T4 <- metricsByDate('..', 'a','2016-01-01','2016-07-01', c('traffic-volume', 'dns-tcp-queries-received-ipv4'))
-T6 <- metricsByDate('..', 'a','2016-01-01','2016-07-01', c('traffic-volume', 'dns-tcp-queries-received-ipv6'))
+letters <- 'a,c,d,h,j-m'
+startDate <- '2016-01-01'
+endDate <- '2016-07-01'
 
-days <- seq(as.Date('2016-01-01'), by='days', along.with=U4)
+U4 <- metricsByDate('..', letters, startDate, endDate, c('traffic-volume', 'dns-udp-queries-received-ipv4'))
+U6 <- metricsByDate('..', letters, startDate, endDate, c('traffic-volume', 'dns-udp-queries-received-ipv6'))
+T4 <- metricsByDate('..', letters, startDate, endDate, c('traffic-volume', 'dns-tcp-queries-received-ipv4'))
+T6 <- metricsByDate('..', letters, startDate, endDate, c('traffic-volume', 'dns-tcp-queries-received-ipv6'))
+
+days <- seq(as.Date(startDate), by='days', along.with=U4)
 queries <- data.frame(dates=days, udp4=U4, udp6=U6, tcp4=T4, tcp6=T6)
 
 png(filename='ex8.png', width=1000, height=800)
 
-ggplot(queries, aes(x=dates, colour="Request Type")) + labs(title = "DNS Requests", x='Days', y='Requests log(n)') +
+ggplot(queries, aes(x=dates)) + labs(title = "DNS Requests \n A, C, D, H, J, K, L, M", x='2016', y='Requests log10(n)', colour='') +
     geom_line(aes(y=udp4, colour='UDP IPv4')) + geom_line(aes(y=tcp4, colour='TCP IPv4')) +
         geom_line(aes(y=udp6, colour='UDP IPv6')) + geom_line(aes(y=tcp6, colour='TCP IPv6')) +
             scale_y_continuous(trans='log10', breaks = scales::trans_breaks("log10", function(x) 10^x),
