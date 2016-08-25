@@ -21,16 +21,17 @@ suppressPackageStartupMessages(library("methods"))
 source('../rssac002.R') ## Include our RSSAC002 API
 library(ggplot2) ## Our graphing library
 
-A <- metricsByDate('..', 'a','2016-01-01','2016-01-02', c('traffic-sizes', 'udp-response-sizes'))
-K <- metricsByDate('..', 'k','2016-01-01','2016-01-02', c('traffic-sizes', 'udp-response-sizes'))
+maxN <- function(ll, N){ ## Return N most maximum values from a list preserving names and order
+    while(length(ll) > N){ ll[[names(which.min(ll))]] <- NULL }
+    return(ll)
+}
 
-startSizes <- 3
-endSizes <- 19
+udpResponses <- maxN(metricsByDate('..', 'A, H, J, K, L, M','2016-01-01','2016-01-03', c('traffic-sizes', 'udp-response-sizes')), 20)
 
-sizes <- data.frame(labels=names(A[startSizes:endSizes]), a=unlist(A[startSizes:endSizes]), k=unlist(K[startSizes:endSizes]))
-levels(sizes$labels) <- c(names(A[startSizes:endSizes])) ## Orders our bar graph by size ranges
+sizes <- data.frame(labels=names(udpResponses), agg=unlist(udpResponses))
+levels(sizes$labels) <- c(names(udpResponses)) ## Orders our bar graph by size ranges
 
 png(filename='ex6.png', width=1000, height=800)
-ggplot(sizes, aes(labels)) + labs(title = "Count of UDP Response Packets by Size", x="Sizes", y="Count Packets", colour = 'Root') +
-    geom_bar(stat='identity', aes(y=a, colour='A Root')) + 
-        geom_bar(stat='identity', aes(y=k, colour='K Root'))
+ggplot(sizes, aes(labels)) + labs(title = "Count of UDP Response Packets by Size \n A, H, J, K, L, M", x="Sizes", y="Count Packets") +
+    geom_bar(stat='identity', aes(y=agg))
+
