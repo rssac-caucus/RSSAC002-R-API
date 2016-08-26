@@ -27,6 +27,6 @@ days <- seq(as.Date('2016-01-01'), by='days', along.with=ip4)
 
 d <-  data.frame(ipv6=ip6 / (ip4+ip6) * 100, dates=days)
 
-png(filename='ex2.png', bg='white')
+png(filename='ex2.png', bg='white', width=1000, height=800)
 ggplot() + geom_ribbon(data = d, aes(x = days, y=ipv6, ymax=ipv6+1, ymin=ipv6-1)) +
-    labs(title='% IPv6 Sources Seen', y='%', x='2016')
+    labs(title='% IPv6 Sources Seen \n A,C,D,H,J,K,L,M', y='%', x='2016')

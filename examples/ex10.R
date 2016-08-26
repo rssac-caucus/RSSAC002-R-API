@@ -21,19 +21,23 @@ suppressPackageStartupMessages(library("methods"))
 source('../rssac002.R') ## Include our RSSAC002 API
 library(ggplot2) ## Our graphing library
 library(reshape2) ## Allows data melting
-meanNA <- function(x){ ## Required for all the missing files
+meanNA <- function(x){ ## Required for the missing files
     mean(x, na.rm=TRUE)
 }
 
-numMetrics = 10 ## How many metrics do we want to graph, take the largest numMetrics of vectors
+numMetrics = 10 ## Top N metrics to graph 
+
+letters <- 'A, H, J, K, L, M'
+startDate <- '2016-01-01'
+endDate <- '2016-07-01'
 
 tmp <- list(tmp=c(0))
 for(ii in seq(0, 288, by=16)){
     idx <- as.character(ii) %.% '-' %.% as.character(ii+15)
     if(ii == 288){
-        vec <- metricsByDate('..', 'A, H, J, K, L, M','2016-01-01','2016-07-01', c('traffic-sizes', 'udp-request-sizes', as.character('288-')))
+        vec <- metricsByDate('..', letters, startDate, endDate, c('traffic-sizes', 'udp-request-sizes', as.character('288-')))
     }else{
-        vec <- metricsByDate('..', 'A, H, J, K, L, M','2016-01-01','2016-07-01', c('traffic-sizes', 'udp-request-sizes', as.character(idx)))
+        vec <- metricsByDate('..', letters, startDate, endDate, c('traffic-sizes', 'udp-request-sizes', as.character(idx)))
     }
     
     if(meanNA(vec) > min(sapply(tmp, meanNA))){
@@ -44,11 +48,11 @@ for(ii in seq(0, 288, by=16)){
     }
 }
 queries <- data.frame(tmp, check.names=FALSE, stringsAsFactors=FALSE)
-queries[['dates']] <- seq(as.Date('2016-01-01'), by='days', along.with=tmp[[1]])
+queries[['dates']] <- seq(as.Date(startDate), by='days', along.with=tmp[[1]])
 
 png(filename='ex10.png', width=1000, height=800)
 ggplot(data=melt(queries, id="dates") , aes(x=dates, y=value, colour=variable)) +
-    labs(title = 'Timeseries of UDP Requests by Byte Size \n A, H, J, K, L, M', x='Days', y='Requests log(n)', colour = 'Size Ranges') +
+    labs(title = 'Top 10 UDP Requests by Byte Size \n A, H, J, K, L, M', x='Days', y='Requests log(n)', colour = '') +
         geom_line() + scale_y_continuous(trans='log10', breaks = scales::trans_breaks("log10", function(x) 10^x),
             labels=scales::trans_format("log10", scales::math_format(10^.x)))
 

@@ -21,36 +21,35 @@ suppressPackageStartupMessages(library("methods"))
 source('../rssac002.R') ## Include our RSSAC002 API
 library(ggplot2) ## Our graphing library
 
-A4 <- metricsByDate('..', 'a', '2016-01-01','2016-07-01', c('unique-sources', 'num-sources-ipv4'))
-A6 <- metricsByDate('..', 'a', '2016-01-01','2016-07-01', c('unique-sources', 'num-sources-ipv6'))
+startDate <- '2016-01-01'
+endDate <- '2016-07-01'
 
-C4 <- metricsByDate('..', 'c', '2016-01-01','2016-07-01', c('unique-sources', 'num-sources-ipv4'))
-C6 <- metricsByDate('..', 'c', '2016-01-01','2016-07-01', c('unique-sources', 'num-sources-ipv6'))
+A4 <- metricsByDate('..', 'a', startDate, endDate, c('unique-sources', 'num-sources-ipv4'))
+A6 <- metricsByDate('..', 'a', startDate, endDate, c('unique-sources', 'num-sources-ipv6'))
 
-D4 <- metricsByDate('..', 'd', '2016-01-01','2016-07-01', c('unique-sources', 'num-sources-ipv4'))
-D6 <- metricsByDate('..', 'd', '2016-01-01','2016-07-01', c('unique-sources', 'num-sources-ipv6'))
+C4 <- metricsByDate('..', 'c', startDate, endDate, c('unique-sources', 'num-sources-ipv4'))
+C6 <- metricsByDate('..', 'c', startDate, endDate, c('unique-sources', 'num-sources-ipv6'))
 
-Agg4 <- metricsByDate('..', 'a,c,d,h,j-m', '2016-01-01','2016-07-01', c('unique-sources', 'num-sources-ipv4'))
-Agg6 <- metricsByDate('..', 'a,c,d,h,j-m', '2016-01-01','2016-07-01', c('unique-sources', 'num-sources-ipv6'))
+D4 <- metricsByDate('..', 'd', startDate, endDate, c('unique-sources', 'num-sources-ipv4'))
+D6 <- metricsByDate('..', 'd', startDate, endDate, c('unique-sources', 'num-sources-ipv6'))
 
-days <- seq(as.Date('2016-01-01'), by='days', along.with=A4)
+Agg4 <- metricsByDate('..', 'a,c,d,h,j-m', startDate, endDate, c('unique-sources', 'num-sources-ipv4'))
+Agg6 <- metricsByDate('..', 'a,c,d,h,j-m', startDate, endDate, c('unique-sources', 'num-sources-ipv6'))
+
+days <- seq(as.Date(startDate), by='days', along.with=A4)
 
 A <- A6 / (A4+A6) * 100
 C <- C6 / (C4+C6) * 100
 D <- D6 / (D4+D6) * 100
 Agg <- Agg6 / (Agg4+Agg6) * 100
 
-lets <- data.frame(dates=days, A=A, C=C, D=D, Agg=Agg)
-
-png(filename='ex4.png', width=1000, height=800)
+lets <- data.frame(dates=days, Agg=Agg, A=A, C=C, D=D)
+png(filename='ex4.png', width=1200, height=800)
 
 pv <- 0.1 ## Width of ribbon
-ggplot() + labs(title='% IPv6 Sources', y='%', x='2016', colour = 'Root') +
-    geom_ribbon(data = lets, aes(x = dates, y=A, ymax=A+pv, ymin=A-pv, colour='A')) +
-        geom_ribbon(data = lets, aes(x = dates, y=C, ymax=C+pv, ymin=C-pv, colour='C')) +
-            geom_ribbon(data = lets, aes(x = dates, y=D, ymax=D+pv, ymin=D-pv, colour='D'))
-
-
-
-
+ggplot() + labs(title='% IPv6 Sources Seen', y='%', x='2016', colour = 'Root') +
+    geom_ribbon(data = lets, aes(x = dates, y=Agg, ymax=Agg+pv, ymin=Agg-pv, colour='A,C,D,H,J,K,L,M')) +
+        geom_ribbon(data = lets, aes(x = dates, y=A, ymax=A+pv, ymin=A-pv, colour='A')) +
+            geom_ribbon(data = lets, aes(x = dates, y=C, ymax=C+pv, ymin=C-pv, colour='C')) +
+                geom_ribbon(data = lets, aes(x = dates, y=D, ymax=D+pv, ymin=D-pv, colour='D'))
 

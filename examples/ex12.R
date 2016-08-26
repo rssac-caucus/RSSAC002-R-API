@@ -22,10 +22,10 @@ source('../rssac002.R') ## Include our RSSAC002 API
 library(ggplot2) ## Our graphing library
 library(reshape2)
 
+letters <- list('A', 'C', 'D', 'H', 'J', 'K', 'L', 'M')
 startDate <- '2016-01-01'
 endDate <- '2016-07-01'
 
-letters <- list('A', 'C', 'D', 'H', 'J', 'K', 'L', 'M')
 metrics <- list('dns-udp-queries-received-ipv4', 'dns-udp-queries-received-ipv6', 'dns-tcp-queries-received-ipv4', 'dns-tcp-queries-received-ipv6',
                 'dns-udp-responses-sent-ipv4', 'dns-udp-responses-sent-ipv6', 'dns-tcp-responses-sent-ipv4', 'dns-tcp-responses-sent-ipv6')
 labels <- list('IPv4 UDP Queries', 'IPv6 UDP Queries', 'IPv4 TCP Queries', 'IPv6 TCP Queries', 'IPv4 UDP Responses', 'IPv6 UDP Responses',

@@ -21,17 +21,22 @@ suppressPackageStartupMessages(library("methods"))
 source('../rssac002.R') ## Include our RSSAC002 API
 library(ggplot2) ## Our graphing library
 
-A4 <- metricsByDate('..', 'a','2016-01-01','2016-07-01', c('unique-sources', 'num-sources-ipv4'))
-A6 <- metricsByDate('..', 'a','2016-01-01','2016-07-01', c('unique-sources', 'num-sources-ipv6'))
-A6agg <- metricsByDate('..', 'a','2016-01-01','2016-07-01', c('unique-sources', 'num-sources-ipv6-aggregate'))
+letters <- 'a,c,d,h,j-m'
+startDate <- '2016-01-01'
+endDate <- '2016-07-01'
 
-days <- seq(as.Date('2016-01-01'), by='days', along.with=A4)
+A4 <- metricsByDate('..', letters, startDate, endDate, c('unique-sources', 'num-sources-ipv4'))
+A6 <- metricsByDate('..', letters, startDate, endDate, c('unique-sources', 'num-sources-ipv6'))
+A6agg <- metricsByDate('..', letters, startDate, endDate, c('unique-sources', 'num-sources-ipv6-aggregate'))
+
+days <- seq(as.Date(startDate), by='days', along.with=A4)
 
 sources <- data.frame(dates=days, ip4=A4, ip6=A6, ip6agg=A6agg)
 
 png(filename='ex9.png', width=1000, height=800)
 
-ggplot(sources, aes(x=dates, colour="IP Source Type")) + labs(title = "IP Sources Seen", x='Days', y='Source Addresses log(n)') +
+ggplot(sources, aes(x=dates)) + labs(title = "IP Sources Seen \n A,C,D,H,J,K,L,M", x='Days', y='IP Sources log(n)', colour='') +
     geom_line(aes(y=ip4, colour='IPv4')) + geom_line(aes(y=ip6, colour='IPv6')) +
         geom_line(aes(y=ip6agg, colour='IPv6 Aggregate /64')) +
-            scale_y_continuous(trans='log')
+            scale_y_continuous(trans='log', breaks = scales::trans_breaks("log10", function(x) 10^x),
+                               labels=scales::trans_format("log10", scales::math_format(10^.x)))

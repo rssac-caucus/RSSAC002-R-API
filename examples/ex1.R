@@ -29,7 +29,7 @@ days <- seq(as.Date('2016-01-01'), by='days', along.with=ip6_sources_j)
 dj <- data.frame(let=ip6_sources_j, dates=days)
 dl <- data.frame(let=ip6_sources_l, dates=days)
 
-png(filename='ex1.png', bg='white')
+png(filename='ex1.png', bg='white', width=1000, height=800)
 ggplot() +  labs(title = 'IPv6 /64 Networks Seen Time series', x='2016', y='IPv6 /64 Networks', colour = 'Root') +
     geom_point(data = dj, aes(x = days, y=let, colour='J')) + geom_point(data = dl, aes(x = days, y = let, colour='L'))
 

@@ -21,29 +21,14 @@ suppressPackageStartupMessages(library("methods"))
 source('../rssac002.R') ## Include our RSSAC002 API
 library(ggplot2) ## Our graphing library
 
-A4 <- metricsByDate('..', 'a', '2016-01-01','2016-07-01', c('unique-sources', 'num-sources-ipv4'))
-A6 <- metricsByDate('..', 'a', '2016-01-01','2016-07-01', c('unique-sources', 'num-sources-ipv6'))
-
-C4 <- metricsByDate('..', 'c', '2016-01-01','2016-07-01', c('unique-sources', 'num-sources-ipv4'))
-C6 <- metricsByDate('..', 'c', '2016-01-01','2016-07-01', c('unique-sources', 'num-sources-ipv6'))
-
-D4 <- metricsByDate('..', 'd', '2016-01-01','2016-07-01', c('unique-sources', 'num-sources-ipv4'))
-D6 <- metricsByDate('..', 'd', '2016-01-01','2016-07-01', c('unique-sources', 'num-sources-ipv6'))
-
 Agg4 <- metricsByDate('..', 'a,c,d,h,j-m', '2016-01-01','2016-07-01', c('unique-sources', 'num-sources-ipv4'))
 Agg6 <- metricsByDate('..', 'a,c,d,h,j-m', '2016-01-01','2016-07-01', c('unique-sources', 'num-sources-ipv6'))
-
-days <- seq(as.Date('2016-01-01'), by='days', along.with=A4)
-
-A <- A6 / (A4+A6) * 100
-C <- C6 / (C4+C6) * 100
-D <- D6 / (D4+D6) * 100
 Agg <- Agg6 / (Agg4+Agg6) * 100
+days <- seq(as.Date('2016-01-01'), by='days', along.with=Agg4)
 
-lets <- data.frame(dates=days, A=A, C=C, D=D, Agg=Agg)
+sources <- data.frame(dates=days, Agg=Agg)
 
 png(filename='ex3.png', width=1000, height=800)
-
-ggplot(lets, aes(Agg)) + labs(title='Density of Aggregate IPv6 Sources', y='Density', x='% IPv6 Sources Seen') +
+ggplot(sources, aes(Agg)) + labs(title='Density of Percentage IPv6 Sources 2016 January - June \n A,C,D,H,J,K,L,M', y='Density', x='% IPv6 Sources Seen') +
     geom_density()
 
