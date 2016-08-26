@@ -21,15 +21,7 @@ suppressPackageStartupMessages(library("methods"))
 source('../rssac002.R') ## Include our RSSAC002 API
 library(ggplot2) ## Our graphing library
 
-K <- metricsByDate('..', 'k','2016-01-01','2016-07-01', c('traffic-sizes', 'udp-response-sizes'))
-
-maxK <- list()
-for(ii in 1:20){
-    idx <- which.max(K)
-    nms <- c(names(K))
-    maxK[nms[idx]] = K[[idx]]
-    K[idx] <- 0
-}
+maxK <- maxN(metricsByDate('..', 'k','2016-01-01','2016-07-01', c('traffic-sizes', 'udp-response-sizes')), 20)
 
 sizes <- data.frame(labels=names(maxK), k=unlist(maxK))
 levels(sizes$labels) <- c(names(maxK)) ## Orders our bar graph by occurrence

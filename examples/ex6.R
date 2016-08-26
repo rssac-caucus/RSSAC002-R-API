@@ -42,6 +42,6 @@ levels(sizes$labels) <- c(names(agg)) ## Orders our bar graph by size ranges
 
 png(filename='ex6.png', width=1500, height=800)
 ggplot(sizes, aes(x=labels, y=value, fill=Root)) +
-    labs(title = "Top 10 Aggregate UDP Responses Sizes per root", x="Packet Size Ranges", y="% of all UDP responses") +
+    labs(title = "Top 10 Aggregate UDP Response Sizes per root", x="Packet Size Ranges", y="% of all UDP responses") +
         geom_bar(stat='identity', position='dodge')
 
