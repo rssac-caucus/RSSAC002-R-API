@@ -24,7 +24,6 @@ library(ggplot2) ## Our graphing library
 agg <- maxN(metricsByDate('..', 'A, H, J, K, L, M','2016-01-01','2016-07-10', c('traffic-sizes', 'udp-response-sizes')), 20)
 
 sizes <- data.frame(labels=names(agg), vals=unlist(agg))
-levels(sizes$labels) <- c(names(agg)) ## Orders our bar graph by occurrence
 
 png(filename='ex7.png', width=1000, height=800)
 ggplot(sizes, aes(labels)) + labs(title = "20 Most Common UDP Response Packet Sizes, January 2016 - June 2016 \n A,H,J,K,L,M", x='', y='') +
