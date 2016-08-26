@@ -26,8 +26,6 @@ startDate <- '2016-01-01'
 endDate <- '2016-07-01'
 agg <- maxN(perc(metricsByDate('..', 'A, H, J, K, L, M', startDate, endDate, c('traffic-sizes', 'udp-response-sizes'))), 10)
 
-str(agg)
-
 ## Grab same metrics as what's in agg for each letter
 lets <- list()
 for(let in list('A', 'H', 'J', 'K', 'L', 'M')){
