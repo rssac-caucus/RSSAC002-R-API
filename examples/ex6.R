@@ -26,6 +26,8 @@ startDate <- '2016-01-01'
 endDate <- '2016-07-01'
 agg <- maxN(perc(metricsByDate('..', 'A, H, J, K, L, M', startDate, endDate, c('traffic-sizes', 'udp-response-sizes'))), 10)
 
+str(agg)
+
 ## Grab same metrics as what's in agg for each letter
 lets <- list()
 for(let in list('A', 'H', 'J', 'K', 'L', 'M')){
@@ -38,7 +40,7 @@ for(let in list('A', 'H', 'J', 'K', 'L', 'M')){
 
 sizes <- melt(data.frame(labels=names(agg), Aggregate=unlist(agg), A=unlist(lets[['A']]), H=unlist(lets[['H']]), J=unlist(lets[['J']]),
                      K=unlist(lets[['K']]), L=unlist(lets[['L']]), M=unlist(lets[['M']])), id='labels', variable.name='Root')
-levels(sizes$labels) <- c(names(agg)) ## Orders our bar graph by size ranges
+##levels(sizes$labels) <- c(names(agg)) ## This breaks the value, key mapping
 
 png(filename='ex6.png', width=1500, height=800)
 ggplot(sizes, aes(x=labels, y=value, fill=Root)) +
