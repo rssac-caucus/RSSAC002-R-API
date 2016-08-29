@@ -7,5 +7,6 @@
 *.jpg
 *.jpeg
 *.tgz
+*.zip
 .DS_Store
 .Rapp.history
