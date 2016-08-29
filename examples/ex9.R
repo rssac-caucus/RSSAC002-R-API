@@ -38,5 +38,5 @@ png(filename='ex9.png', width=1000, height=800)
 ggplot(sources, aes(x=dates)) + labs(title = "IP Sources Seen \n A,C,D,H,J,K,L,M", x='Days', y='IP Sources log(n)', colour='') +
     geom_line(aes(y=ip4, colour='IPv4')) + geom_line(aes(y=ip6, colour='IPv6')) +
         geom_line(aes(y=ip6agg, colour='IPv6 Aggregate /64')) +
-            scale_y_continuous(trans='log', breaks = scales::trans_breaks("log10", function(x) 10^x),
+            scale_y_continuous(trans='log10', breaks = scales::trans_breaks("log10", function(x) 10^x),
                                labels=scales::trans_format("log10", scales::math_format(10^.x)))
