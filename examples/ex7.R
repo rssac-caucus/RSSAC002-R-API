@@ -27,5 +27,5 @@ sizes <- data.frame(labels=names(agg), vals=unlist(agg))
 
 png(filename='ex7.png', width=1000, height=800)
 ggplot(sizes, aes(labels)) + labs(title = "20 Most Common UDP Response Packet Sizes, January 2016 - June 2016 \n A,H,J,K,L,M", x='', y='') +
-    geom_bar(stat='identity', aes(y=vals)) + coord_polar()
+    geom_bar(stat='identity', aes(y=vals)) + coord_polar() + scale_x_discrete(limits=unlist(names(agg)))
 
