@@ -28,11 +28,11 @@ rootLetters <- c("a", "b", "c", "d", "e", "h", "j", "k", "l", "m")
 ## path is the relative or absolute location of the rssac002 data files
 ##
 ## letters can be a single letter(a), a range(a-c), a list(a,b,g), or a combination of all 3
-## letters MUST be given in order(e.g. a-d,f,l-m), white space is not allowed
+## letters is case inspecific
 ## If letters is not a single letter, an aggregate will be returned
 ##
 ## startDate and endDate take the form YYYY-MM-DD, endDate will not be included
-## Invalid DD values can be used for endDate if(DD < 32) Example: 2016-02-30
+## Example: 2016-02-30
 ##
 ## metrics is a vector of requested metrics as strings arranged in a hierarchy to identify a single vector of values
 ## The first and second entry of metrics are required
@@ -40,7 +40,12 @@ rootLetters <- c("a", "b", "c", "d", "e", "h", "j", "k", "l", "m")
 ## Examples: c("traffic-sizes", "udp-request-sizes", "16-31"), c("unique-sources", "num-sources-ipv6"), 
 ## c("rcode-volume", "10"), 
 ##
-## Returns a vector of values ordered by date
+## metricsByDate() Returns a vector of values ordered by date
+##
+## Special-case traffic-sizes
+## If metricsBydate(path, letters, startDate, endDate, c('traffic-sizes', $SIZE_TYPE))
+## Where $SIZE_METRIC == 'udp-request-sizes' || 'udp-response-sizes' || 'tcp-request-sizes' || 'tcp-response-sizes'
+## metricsByDate will return a 2 dimensional list of all sizes of $SIZE_TYPE by date
 metricsByDate <- function(path, letters, startDate, endDate, metrics){
     ## Encapsulates mess of integer vs double
     ## We store everything as double because RAM is cheap
@@ -58,10 +63,25 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
     rv <- list() ## Our return values
     fileLetters <- c() ## Our list of letters to work on
 
-    ## TODO: Do more bad input checking and print errors and exit
+    ## Bad input checking, print errors and exit
     if(! substr(path, nchar(path), nchar(path)) == '/') { path <- path %.% '/' } ## Append / to path if necessary
     if(! (length(metrics) != 2 || length(metrics) != 3)){
         cat("Bad length of metrics argument len=" %.% length(metrics), "\n")
+        quit()
+    }
+    tryCatch({
+        as.Date(startDate)
+        as.Date(endDate)
+    }, error=function(e){
+        cat("Bad or nonexistent date", "\n")
+        quit()
+    })
+    if(as.Date(startDate) > as.Date(endDate)){
+        cat("Start date comes after end date", "\n")
+        quit()
+    }
+    if(as.Date(startDate) == as.Date(endDate)){
+        cat("Start date and end date same", "\n")
         quit()
     }
 
@@ -75,7 +95,7 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
     }
 
     ## Generate our list of letters
-    letters <- gsub(' ', '', tolower(letters))
+    letters <- sort(gsub(' ', '', tolower(letters)))
     toks <- unlist(strsplit(letters, ""))
     ii <- 0
     for(t in toks){
