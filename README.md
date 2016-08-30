@@ -13,10 +13,9 @@ this in a cron job somewhere to run periodically.
 ## rssac002.R
 The main file containing the following functions written in R.
 
-### metricsBydate()
-
+### metricsByDate()
 **metricsByDate(path, letters, startDate, endDate, metrics)**
-**metricsByDate()** Returns a vector of values ordered by date.
+Return a vector of values ordered by date.
 
 **path** is the relative or absolute location of the rssac002 data
   files as downloaded by **getYaml.sh**.
@@ -34,7 +33,7 @@ The first and second entry of metrics are required. The third entry of metrics i
 *Examples: c("traffic-sizes", "udp-request-sizes", "16-31"), c("unique-sources", "num-sources-ipv6"), c("rcode-volume", "10")*
 
 #### Special-case traffic-sizes
-If **metricsBydate(path, letters, startDate, endDate, c('traffic-sizes', $SIZE-TYPE))**
+If **metricsByDate(path, letters, startDate, endDate, c('traffic-sizes', $SIZE-TYPE))**
 Where $SIZE-TYPE == 'udp-request-sizes' || 'udp-response-sizes' || 'tcp-request-sizes' || 'tcp-response-sizes'.
 **metricsByDate()** will return a 2 dimensional list of all sizes of $SIZE-TYPE by date.
 NOTE: In this special-case instantiation **metricsByDate()** will
@@ -42,14 +41,18 @@ return a list and not a vector.
 
 ### maxN()
 **maxN(ll, N)**
-Return N most maximum values from a list preserving names and order
+Return N most maximum values from a list preserving names and order.
+
 **ll** is a list of numeric values
+
 **N** is number of elements to return
 
 ### perc()
 **perc(ll, r=2)**
-Compute percentage of sum(**ll**) for each value in a list preserving names and order
+Compute percentage of sum(**ll**) for each value in a list preserving names and order.
+
 **ll** is a list of numeric values
+
 **r** is passed to round() as digits=**r**
 
 ## /examples directory
