@@ -38,10 +38,9 @@ for(let in list('A', 'H', 'J', 'K', 'L', 'M')){
 
 sizes <- melt(data.frame(labels=names(agg), Aggregate=unlist(agg), A=unlist(lets[['A']]), H=unlist(lets[['H']]), J=unlist(lets[['J']]),
                      K=unlist(lets[['K']]), L=unlist(lets[['L']]), M=unlist(lets[['M']])), id='labels', variable.name='Root')
-##levels(sizes$labels) <- c(names(agg)) ## This breaks the value, key mapping
 
 png(filename='ex6.png', width=1500, height=800)
 ggplot(sizes, aes(x=labels, y=value, fill=Root)) +
     labs(title = "Top 10 Aggregate UDP Response Sizes by root \n 2016 January - June", x="Packet Size Range", y="% of all UDP responses") +
-        geom_bar(stat='identity', position='dodge')
+        geom_bar(stat='identity', position='dodge') + scale_x_discrete(limits=unlist(names(agg)))
 
