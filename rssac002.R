@@ -38,7 +38,7 @@ rootLetters <- c("a", "b", "c", "d", "e", "h", "j", "k", "l", "m")
 ## The first and second entry of metrics are required
 ## The following entries of metrics are optional dependent on the metric being queried
 ## Examples: c("traffic-sizes", "udp-request-sizes", "16-31"), c("unique-sources", "num-sources-ipv6"), 
-## c("rcode-volume", "10"), 
+## c("rcode-volume", "10")
 ##
 ## metricsByDate() Returns a vector of values ordered by date
 ##
