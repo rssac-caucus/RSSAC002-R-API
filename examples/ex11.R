@@ -34,6 +34,6 @@ df <- melt(data.frame(dates=seq(as.Date(startDate), by='days', along.with=ranges
 
 png(filename='ex11.png', width=1000, height=800)
 ggplot(df, aes(x=dates, y=value, colour=Ranges)) + labs(title = "Top 10 UDP Responses by Byte Size\n A,H,J,K,L,M", x="2016", y="Responses log(n)", colour='') +
-    geom_line(size=1.5) + scale_y_continuous(trans='log10', breaks = scales::trans_breaks("log10", function(x) 10^x),
+    geom_line(size=1.3) + scale_y_continuous(trans='log10', breaks = scales::trans_breaks("log10", function(x) 10^x),
                       labels=scales::trans_format("log10", scales::math_format(10^.x)))
 

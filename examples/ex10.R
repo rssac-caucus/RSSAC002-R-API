@@ -53,6 +53,6 @@ queries[['dates']] <- seq(as.Date(startDate), by='days', along.with=tmp[[1]])
 png(filename='ex10.png', width=1000, height=800)
 ggplot(data=melt(queries, id="dates") , aes(x=dates, y=value, colour=variable)) +
     labs(title = 'Top 10 UDP Requests by Byte Size \n A, H, J, K, L, M', x='Days', y='Requests log(n)', colour = '') +
-        geom_line() + scale_y_continuous(trans='log10', breaks = scales::trans_breaks("log10", function(x) 10^x),
+        geom_line(size=1.3) + scale_y_continuous(trans='log10', breaks = scales::trans_breaks("log10", function(x) 10^x),
             labels=scales::trans_format("log10", scales::math_format(10^.x)))
 
