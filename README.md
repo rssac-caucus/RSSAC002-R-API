@@ -25,7 +25,7 @@ Return a vector of values ordered by date.
 If **letters** is not a single letter an aggregate will be returned.
 
 **startDate** and **endDate** take the form YYYY-MM-DD, **endDate** will not be included
-*Example: 2016-02-30*
+*Example: 2016-02-26*
 
 **metrics** is a vector of requested metrics as strings arranged in a
 hierarchy to identify a single vector of values. The length of **metrics** can be either 2 or 3.
