@@ -8,6 +8,7 @@
 *.jpeg
 *.tgz
 *.zip
+*.txt
 .DS_Store
 .Rapp.history
 tests/*
