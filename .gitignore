@@ -2,7 +2,6 @@
 *.log
 *-root/*
 *.yaml
-*.png
 *.pdf
 *.jpg
 *.jpeg
