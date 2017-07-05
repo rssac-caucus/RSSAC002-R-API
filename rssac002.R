@@ -23,7 +23,7 @@ suppressPackageStartupMessages(library("methods"))
 library(yaml) ##  Read/write YAML files
 
 `%.%` <- function(a, b) paste0(a, b) ## Infix concatenation operator
-rootLetters <- c("a", "b", "c", "d", "e", "h", "j", "k", "l", "m")
+rootLetters <- c("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m")
 getYaml <- FALSE ## Are we using data provided by getYaml.sh or https://github.com/rssac-caucus/RSSAC002-data
 
 ## path is the relative or absolute location of the rssac002 data files

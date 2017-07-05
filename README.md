@@ -62,10 +62,12 @@ A directory full of examples of increasing complexity.
 
 ## FAQ
 Q: What does this mean?
+
 `
 Warning in loop_apply(n, do.ply) :
-  Removed 2 rows containing missing values (stat_smooth).
+	Removed 2 rows containing missing values (stat_smooth).
 `
+
 A: We store all values as doubles with the exception of zero. Zero is
 stored as an integer. What this error likely means is that we
 interpreted a value in a YAML file that was larger than could be
