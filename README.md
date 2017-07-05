@@ -5,10 +5,12 @@ DNS root servers.
 
 [RSSAC002v3](https://www.icann.org/en/system/files/files/rssac-002-measurements-root-06jun16-en.pdf)
 
-## getYAML.sh
-
-A UNIX shell script to download the RSSAC002 YAML files. Put
-this in a cron job somewhere to run periodically.
+## Root Server Data
+rssac002.R expects that data from
+[RSSAC002-DATA](https://github.com/rssac-caucus/RSSAC002-data) is 
+available in ./RSSAC002-data. From ./ type `git clone
+https://github.com/rssac-caucus/RSSAC002-data` to retrieve this data,
+and `git pull https://github.com/rssac-caucus/RSSAC002-data` to update it.
 
 ## rssac002.R
 The main file containing the following functions written in R.

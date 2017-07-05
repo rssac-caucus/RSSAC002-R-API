@@ -18,6 +18,11 @@
 
 # This script downloads and normalizes directory structure for RSSAC002 YAML data for all root DNS operators
 # This script is intended to be run wtihout any arguments
+# This script has been DEPRECATED in favor of using the data hosted at https://github.com/rssac-caucus/RSSAC002-data
+
+##################
+### DEPRECATED ###
+##################
 
 LOGFILE=getYAML.log
 WGET=/usr/local/bin/wget
@@ -53,5 +58,3 @@ dload https://rssac.wide.ad.jp/rssac002-metrics/ m-root
 echo $(grep .yaml $LOGFILE |wc -l) YAML files downloaded
 find . -type f|grep yaml|awk -F / '{print "Have YAML from " $2}'|sort|uniq
 find . -type f -mtime 1|grep yaml|awk -F / '{print "Recent YAML from " $2}'|sort|uniq
-
-
