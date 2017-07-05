@@ -1,6 +1,7 @@
 .git/*
 *.log
 *-root/*
+RSSAC002-data/*
 *.yaml
 *.pdf
 *.jpg
