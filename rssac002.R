@@ -24,6 +24,7 @@ library(yaml) ##  Read/write YAML files
 
 `%.%` <- function(a, b) paste0(a, b) ## Infix concatenation operator
 rootLetters <- c("a", "b", "c", "d", "e", "h", "j", "k", "l", "m")
+getYaml <- FALSE ## Are we using data provided by getYaml.sh or https://github.com/rssac-caucus/RSSAC002-data
 
 ## path is the relative or absolute location of the rssac002 data files
 ##
@@ -128,7 +129,11 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
         while(! all(activeDate == endDate)){
             ##cat("Parsing " %.% let %.% "-root", "\n")
             fn <- paste(let, "root", activeDate[1] %.% activeDate[2] %.% activeDate[3], metrics[1], sep="-") %.% ".yaml"
-            fp <- file.path(path %.% let %.% "-root", activeDate[1], activeDate[2], metrics[1]) %.% "/"
+            if(getYaml){
+                fp <- file.path(path %.% let %.% "-root", activeDate[1], activeDate[2], metrics[1]) %.% "/"
+            }else{
+                fp <- file.path(path %.% 'RSSAC002-data', activeDate[1], activeDate[2], metrics[1]) %.% "/"
+            }
             f <- fp %.% fn
             if(file.exists(f)){
                 ##cat("exists  " %.% f, "\n")
