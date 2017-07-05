@@ -60,5 +60,17 @@ Compute percentage of sum(**ll**) for each value in a list preserving names and 
 ## /examples directory
 A directory full of examples of increasing complexity.
 
-
-
+## FAQ
+Q: What does this mean?
+`
+Warning in loop_apply(n, do.ply) :
+  Removed 2 rows containing missing values (stat_smooth).
+`
+A: We store all values as doubles with the exception of zero. Zero is
+stored as an integer. What this error likely means is that we
+interpreted a value in a YAML file that was larger than could be
+stored in a double. Often this happens in times of DDOS when
+the unique-sources metric grows exceptionally large. It's an outlyer
+and unfortunately the R language doesn't have an easy way to define
+a new type that can hold these large values. My advice is simply to
+ignore them.
