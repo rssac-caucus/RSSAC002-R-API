@@ -21,14 +21,14 @@ suppressPackageStartupMessages(library("methods"))
 source('../rssac002.R') ## Include our RSSAC002 API
 library(ggplot2) ## Our graphing library
 
-Agg4 <- metricsByDate('..', 'a,c,d,h,j-m', '2016-01-01','2016-07-01', c('unique-sources', 'num-sources-ipv4'))
-Agg6 <- metricsByDate('..', 'a,c,d,h,j-m', '2016-01-01','2016-07-01', c('unique-sources', 'num-sources-ipv6'))
+Agg4 <- metricsByDate('..', 'a,c,d,h,j-m', '2016-01-01','2017-01-01', c('unique-sources', 'num-sources-ipv4'))
+Agg6 <- metricsByDate('..', 'a,c,d,h,j-m', '2016-01-01','2017-01-01', c('unique-sources', 'num-sources-ipv6'))
 Agg <- Agg6 / (Agg4+Agg6) * 100
 days <- seq(as.Date('2016-01-01'), by='days', along.with=Agg4)
 
 sources <- data.frame(dates=days, Agg=Agg)
 
 png(filename='ex3.png', width=1000, height=800)
-ggplot(sources, aes(Agg)) + labs(title='Density of Percentage IPv6 Sources 2016 January - June \n A,C,D,H,J,K,L,M', y='Density', x='% IPv6 Sources Seen') +
+ggplot(sources, aes(Agg)) + labs(title='Density of Percentage IPv6 Sources 2016 \n A,C,D,H,J,K,L,M', y='Density', x='% IPv6 Sources Seen') +
     geom_density()
 

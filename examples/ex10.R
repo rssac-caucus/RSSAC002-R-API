@@ -29,7 +29,7 @@ numMetrics = 10 ## Top N metrics to graph
 
 letters <- 'A, H, J, K, L, M'
 startDate <- '2016-01-01'
-endDate <- '2016-07-01'
+endDate <- '2017-01-01'
 
 tmp <- list(tmp=c(0))
 for(ii in seq(0, 288, by=16)){

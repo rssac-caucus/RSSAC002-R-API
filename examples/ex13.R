@@ -24,7 +24,7 @@ library(reshape2)
 
 letters <- list('A', 'J')
 startDate <- '2016-01-01'
-endDate <- '2016-06-01'
+endDate <- '2017-01-01'
 
 codes <- as.list(as.character(seq(0, 16)))
 
@@ -56,6 +56,6 @@ rcodes <- melt(data.frame(labels=names(lets[['A']]), A=unlist(lets[['A']]), J=un
 
 png(filename='ex13.png', width=1000, height=800)
 ggplot(rcodes, aes(x=labels, y=value, fill=Root)) +
-    labs(title = 'Rcode Volume Percentages by Root January - May 2016\n ' %.% paste(letters, collapse=','), x="", y="%") +
+    labs(title = 'Rcode Volume Percentages by Root 2016\n ' %.% paste(letters, collapse=','), x="", y="%") +
         geom_bar(stat='identity', position='stack') + scale_x_discrete(limits=unlist(codes))
 

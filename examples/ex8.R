@@ -23,7 +23,7 @@ library(ggplot2) ## Our graphing library
 
 letters <- 'a,c,d,h,j-m'
 startDate <- '2016-01-01'
-endDate <- '2016-07-01'
+endDate <- '2017-01-01'
 
 U4 <- metricsByDate('..', letters, startDate, endDate, c('traffic-volume', 'dns-udp-queries-received-ipv4'))
 U6 <- metricsByDate('..', letters, startDate, endDate, c('traffic-volume', 'dns-udp-queries-received-ipv6'))

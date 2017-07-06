@@ -22,9 +22,9 @@ source('../rssac002.R') ## Include our RSSAC002 API
 library(ggplot2) ## Our graphing library
 library(reshape2)
 
-letters <- list('A', 'C', 'D', 'H', 'J', 'K', 'L', 'M')
+letters <- list('A', 'C', 'D', 'H', 'J', 'M')
 startDate <- '2016-01-01'
-endDate <- '2016-07-01'
+endDate <- '2017-01-01'
 
 metrics <- list('dns-udp-queries-received-ipv4', 'dns-udp-queries-received-ipv6', 'dns-tcp-queries-received-ipv4', 'dns-tcp-queries-received-ipv6',
                 'dns-udp-responses-sent-ipv4', 'dns-udp-responses-sent-ipv6', 'dns-tcp-responses-sent-ipv4', 'dns-tcp-responses-sent-ipv6')
@@ -56,10 +56,10 @@ for(let in letters){
 
 ## Draw stuff
 packets <- melt(data.frame(labels=names(lets[['A']]), A=unlist(lets[['A']]), C=unlist(lets[['C']]), D=unlist(lets[['D']]), H=unlist(lets[['H']]), J=unlist(lets[['J']]),
-                           K=unlist(lets[['K']]), L=unlist(lets[['L']]), M=unlist(lets[['M']])), id='labels', variable.name='Root')
+                           M=unlist(lets[['M']])), id='labels', variable.name='Root')
 
 png(filename='ex12.png', width=1000, height=800)
 ggplot(packets, aes(x=labels, y=value, fill=Root)) +
-    labs(title = 'Traffic Volume Percentages by Root January - June 2016\n ' %.% paste(letters, collapse=','), x="", y="%") +
+    labs(title = 'Traffic Volume Percentages by Root 2016\n ' %.% paste(letters, collapse=','), x="", y="%") +
         geom_bar(stat='identity', position='stack')
 

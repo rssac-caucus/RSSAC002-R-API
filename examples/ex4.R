@@ -22,7 +22,7 @@ source('../rssac002.R') ## Include our RSSAC002 API
 library(ggplot2) ## Our graphing library
 
 startDate <- '2016-01-01'
-endDate <- '2016-07-01'
+endDate <- '2017-01-01'
 
 A4 <- metricsByDate('..', 'a', startDate, endDate, c('unique-sources', 'num-sources-ipv4'))
 A6 <- metricsByDate('..', 'a', startDate, endDate, c('unique-sources', 'num-sources-ipv6'))

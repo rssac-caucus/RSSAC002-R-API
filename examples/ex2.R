@@ -21,8 +21,8 @@ suppressPackageStartupMessages(library("methods"))
 source('../rssac002.R') ## Include our RSSAC002 API
 library(ggplot2) ## Our graphing library
 
-ip4 <- metricsByDate('..', 'a,c,d,h-m', '2016-01-01','2016-07-01', c('unique-sources', 'num-sources-ipv4'))
-ip6 <- metricsByDate('..', 'a,c,d,h-m', '2016-01-01','2016-07-01', c('unique-sources', 'num-sources-ipv6'))
+ip4 <- metricsByDate('..', 'a,c,d,h,j-m', '2016-01-01','2017-01-01', c('unique-sources', 'num-sources-ipv4'))
+ip6 <- metricsByDate('..', 'a,c,d,h,j-m', '2016-01-01','2017-01-01', c('unique-sources', 'num-sources-ipv6'))
 days <- seq(as.Date('2016-01-01'), by='days', along.with=ip4)
 
 d <-  data.frame(ipv6=ip6 / (ip4+ip6) * 100, dates=days)

@@ -23,7 +23,7 @@ library(ggplot2) ## Our graphing library
 
 letters <- 'a,c,d,h,j-m'
 startDate <- '2016-01-01'
-endDate <- '2016-07-01'
+endDate <- '2017-01-01'
 
 A4 <- metricsByDate('..', letters, startDate, endDate, c('unique-sources', 'num-sources-ipv4'))
 A6 <- metricsByDate('..', letters, startDate, endDate, c('unique-sources', 'num-sources-ipv6'))

@@ -164,7 +164,7 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
                     rv[[let]] <- append(rv[[let]], setVal(yam[metrics[2]][[1]][[1]][[metrics[3]]]))
                 }
             }else{ ## No file for this date, fill with Not-a-Number(NaN) and warn user
-                cat("Warn:Missing " %.% f, "\n")
+                cat("Missing " %.% f, "\n")
                 if(rvType == 'vector'){
                     rv[[let]] <- append(rv[[let]], NaN)
                 }

@@ -23,7 +23,7 @@ library(ggplot2) ## Our graphing library
 library(reshape2)
 
 startDate <- '2016-01-01'
-endDate <- '2016-07-01'
+endDate <- '2017-01-01'
 agg <- maxN(perc(metricsByDate('..', 'A, H, J, K, L, M', startDate, endDate, c('traffic-sizes', 'udp-response-sizes'))), 10)
 
 ## Grab same metrics as what's in agg for each letter
@@ -41,6 +41,6 @@ sizes <- melt(data.frame(labels=names(agg), Aggregate=unlist(agg), A=unlist(lets
 
 png(filename='ex6.png', width=1500, height=800)
 ggplot(sizes, aes(x=labels, y=value, fill=Root)) +
-    labs(title = "Top 10 Aggregate UDP Response Sizes by root \n 2016 January - June", x="Packet Size Range", y="% of all UDP responses") +
+    labs(title = "Top 10 Aggregate UDP Response Sizes by root \n 2016", x="Packet Size Range", y="% of all UDP responses") +
         geom_bar(stat='identity', position='dodge') + scale_x_discrete(limits=unlist(names(agg)))
 
