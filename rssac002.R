@@ -150,6 +150,10 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
                         for(ii in 1:length(yam[metrics[[2]]][[1]][[1]] )){ ## List indices? More like list indecents
                             key <- names(yam[metrics[2]][[1]][[1]][ii])
                             value <- yam[metrics[2]][[1]][[1]][ii][[1]]
+                            if(is.null(key)){ ## Handle broken YAML, e.g. h-root-20170202-traffic-sizes.yaml
+                                cat("Skipping " %.% f, "\n")
+                                next
+                            }
                             if(key %in% names(rv[[let]])){
                                 rv[[let]][[key]] <- rv[[let]][[key]] + setVal(value)
                             }else{
