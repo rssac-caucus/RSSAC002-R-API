@@ -77,6 +77,14 @@ metricsByDate <- function(path, letters, startDate, endDate, metrics){
         cat("Bad or nonexistent date", "\n")
         quit()
     })
+    if(length(as.Date(startDate)) == 0){
+        cat("Start date is zero length", "\n")
+        quit()
+    }
+    if(length(as.Date(endDate)) == 0){
+        cat("End date is zero length", "\n")
+        quit()
+    }
     if(as.Date(startDate) > as.Date(endDate)){
         cat("Start date comes after end date", "\n")
         quit()
