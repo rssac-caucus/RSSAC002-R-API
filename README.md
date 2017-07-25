@@ -5,6 +5,15 @@ DNS root servers.
 
 [RSSAC002v3](https://www.icann.org/en/system/files/files/rssac-002-measurements-root-06jun16-en.pdf)
 
+## Dependencies
+This project is dependent on the following R modules to be installed and in the path.
+
+[ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html)
+
+[reshape2](https://cran.r-project.org/web/packages/reshape2/index.html)
+
+[yaml](https://cran.r-project.org/web/packages/yaml/index.html)
+
 ## Root Server Data
 rssac002.R expects that data from
 [RSSAC002-DATA](https://github.com/rssac-caucus/RSSAC002-data) is 
