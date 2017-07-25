@@ -16,8 +16,6 @@
 ##
 ##  Copyright (C) 2016, Andrew McConachie, <andrew@depht.com>
 options(warn=1)
-suppressPackageStartupMessages(library("methods"))
-.libPaths(c(.libPaths(), "../"))
 source('../rssac002.R') ## Include our RSSAC002 API
 library(ggplot2) ## Our graphing library
 

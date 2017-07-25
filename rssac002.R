@@ -18,8 +18,6 @@
 
 ## Globals and includes
 options(warn=1)
-.libPaths(c(.libPaths(), "."))
-suppressPackageStartupMessages(library("methods"))
 library(yaml) ##  Read/write YAML files
 
 `%.%` <- function(a, b) paste0(a, b) ## Infix concatenation operator
